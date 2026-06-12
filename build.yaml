@@ -1,20 +1,21 @@
 name: "SSO Authentication"
 guid: "505ce9d1-d916-42fa-86ca-673ef241d7df"
-imageUrl: "https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/main/img/logo.png"
-version: "4.0.0.4"
-targetAbi: "10.11.0.0"
+imageUrl: "https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/main/img/logo.png"
+version: "4.0.0.5"
+targetAbi: "10.11.11.0"
 framework: "net9.0"
-owner: "9p4"
+owner: "k0lin"
 overview: "Authenticate users against an SSO provider."
 description: |
   This plugin allows users to sign in through an SSO provider (such as Google, Facebook, or your own provider). This enables one-click signin.
-  Review documentation at https://github.com/9p4/jellyfin-plugin-sso
+  Review documentation at https://github.com/k0lin/jellyfin-plugin-sso
 category: "Authentication"
 artifacts:
   - "SSO-Auth.dll"
   - "Duende.IdentityModel.OidcClient.dll"
   - "Duende.IdentityModel.dll"
 changelog: |
+  4.0.0.5: Update Jellyfin dependencies and target ABI to 10.11.11
   4.0.0.4: Fix security issue in SAML
   4.0.0.0: Jellyfin 10.11
   3.5.3.0: Allow for OID-provided avatars, various bugfixes and workarounds

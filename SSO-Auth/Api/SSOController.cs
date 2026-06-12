@@ -28,7 +28,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SSO_Auth.Lib;
 
 namespace Jellyfin.Plugin.SSO_Auth.Api;
 
@@ -137,7 +136,7 @@ public class SSOController : ControllerBase
                     System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                     System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
                     string version = fvi.FileVersion;
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/9p4/jellyfin-plugin-sso)");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/k0lin/jellyfin-plugin-sso)");
                     return client;
                 }
             };
@@ -400,7 +399,7 @@ public class SSOController : ControllerBase
                     System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
                     string version = fvi.FileVersion;
 
-                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/9p4/jellyfin-plugin-sso)");
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/k0lin/jellyfin-plugin-sso)");
                     return client;
                 }
             };
@@ -1204,7 +1203,7 @@ public class SSOController : ControllerBase
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
                 string version = fvi.FileVersion;
-                client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/9p4/jellyfin-plugin-sso)");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd($"Jellyfin-Plugin-SSO-Auth +{version} (https://github.com/k0lin/jellyfin-plugin-sso)");
 
                 var avatarResponse = await client.GetAsync(avatarUrl);
 

@@ -2,28 +2,29 @@
 
 <p align="center">
 
-<img alt="Logo" src="https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/main/img/logo.png"/>
+<img alt="Logo" src="https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/main/img/logo.png"/>
 <br/>
 <br/>
-<a href="https://github.com/9p4/jellyfin-plugin-sso">
-<img alt="GPL 3.0 License" src="https://img.shields.io/github/license/9p4/jellyfin-plugin-sso.svg"/>
+<a href="https://github.com/k0lin/jellyfin-plugin-sso">
+<img alt="GPL 3.0 License" src="https://img.shields.io/github/license/k0lin/jellyfin-plugin-sso.svg"/>
 </a>
-<a href="https://github.com/9p4/jellyfin-plugin-sso/actions/workflows/dotnet.yml">
-<img alt="GitHub Actions Build Status" src="https://github.com/9p4/jellyfin-plugin-sso/actions/workflows/dotnet.yml/badge.svg"/>
+<a href="https://github.com/k0lin/jellyfin-plugin-sso/actions/workflows/dotnet.yml">
+<img alt="GitHub Actions Build Status" src="https://github.com/k0lin/jellyfin-plugin-sso/actions/workflows/dotnet.yml/badge.svg"/>
 </a>
-<a href="https://github.com/9p4/jellyfin-plugin-sso/releases">
-<img alt="Current Release" src="https://img.shields.io/github/release/9p4/jellyfin-plugin-sso.svg"/>
+<a href="https://github.com/k0lin/jellyfin-plugin-sso/releases">
+<img alt="Current Release" src="https://img.shields.io/github/release/k0lin/jellyfin-plugin-sso.svg"/>
 </a>
-<a href="https://github.com/9p4/jellyfin-plugin-sso/releases.atom">
+<a href="https://github.com/k0lin/jellyfin-plugin-sso/releases.atom">
 <img alt="Release RSS Feed" src="https://img.shields.io/badge/rss-releases-ffa500?logo=rss" />
 </a>
-<a href="https://github.com/9p4/jellyfin-plugin-sso/commits/main.atom">
+<a href="https://github.com/k0lin/jellyfin-plugin-sso/commits/main.atom">
 <img alt="Main Commits RSS Feed" src="https://img.shields.io/badge/rss-commits-ffa500?logo=rss" />
 </a>
 </p>
 
-Project archived because I'm tired of working on this after all the years.
+This project has been forked from the [creator's code](https://github.com/9p4/jellyfin-plugin-sso), with the intention of continuing to maintain it and add features. If you use it, please open discussions or issues so we can continue development as best as possible.
 
+## About
 This plugin allows users to sign in through an SSO provider (such as Google, Microsoft, or your own provider). This enables one-click signin.
 
 https://user-images.githubusercontent.com/17993169/149681516-f93b43f5-fa5c-4c1f-a909-e5414878a864.mp4
@@ -63,7 +64,7 @@ This is my first time writing C# so please take all of the code written here wit
 
 ## Installing
 
-Add the package repo [https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json](https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json) to your Jellyfin plugin repositories.
+Add the package repo [https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json](https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json) to your Jellyfin plugin repositories.
 
 Then, install the plugin from the plugin catalog!
 
@@ -80,7 +81,7 @@ Instead add the **old** package repository: [https://repo.ersei.net/jellyfin/man
 
 If you're impatient/brave/feel like helping us test things out, you can install the nightly build of the plugin, which is automatically built against the main branch.
 
-The nightly build can be installed from the [main plugin repo](https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json), and will always have a version number of `0.0.0.9000`.
+The nightly build can be installed from the [main plugin repo](https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json), and will always have a version number of `0.0.0.9000`.
 
 The nightly build may have new features unavailable in other builds, but **be warned**, things may change frequently in nightly builds, and things may break, and you could lose data.
 
@@ -304,7 +305,7 @@ Anything tagged/released as a formal Github release will also be built and publi
 
 If you wish to use releases from your own fork, refer to
 [Installing](#installing), however, you will need to change the url to the
-manifest file, `https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json`
+manifest file, `https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json`
 so that it refers to your fork.
 
 ## Credits and Thanks
