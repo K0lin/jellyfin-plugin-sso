@@ -14,6 +14,8 @@ jobs:
       dotnet-target:  "net9.0"
   upload:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
     - build
     steps:
@@ -40,6 +42,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
     - upload
     steps:
