@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>SSO</title>
+    <title>SSO Settings</title>
   </head>
   <body>
     <div
@@ -11,68 +11,114 @@
       data-controller="__plugin/SSO-Auth.js"
     >
       <div data-role="content">
-        <div class="content-primary">
-          <div class="sectionTitleContainer flex align-items-center">
-            <h2 class="sectionTitle">SSO Settings:</h2>
+        <div class="content-primary sso-config-shell">
+          <div
+            class="sectionTitleContainer flex align-items-center sso-config-header"
+          >
+            <div class="sso-config-heading">
+              <p class="sso-kicker" data-i18n="config.HeaderKicker">
+                Single Sign-On
+              </p>
+              <h2
+                class="sectionTitle sso-config-title"
+                data-i18n="config.HeaderTitle"
+              >
+                SSO Settings
+              </h2>
+              <p class="sso-config-copy" data-i18n="config.HeaderDescription">
+                Configure OpenID Connect providers, authorization rules, and
+                user provisioning behavior for Jellyfin SSO.
+              </p>
+            </div>
             <a
               is="emby-button"
-              class="raised button-alt headerHelpButton"
+              class="raised emby-button button-alt sso-help-button"
               target="_blank"
+              rel="noopener noreferrer"
               href="https://github.com/k0lin/jellyfin-plugin-sso"
-              >${Help}</a
             >
+              <span class="material-icons help" aria-hidden="true"></span>
+              <span data-i18n="common.Help">Help</span>
+            </a>
           </div>
-          <p>
-            <i>Note:</i>
-            Making changes to this configuration requires a restart of Jellyfin.
-            <br />
-            This plug-in is in early development, not all configuration options
-            have been implented in the UI, for example, SAML provider
-            configuration has not been implemented.
-            <br />
-            See the
-            <a
-              is="emby-linkbutton"
-              href="https://github.com/k0lin/jellyfin-plugin-sso"
-              class="button-link"
-              >help page</a
-            >
-            and
-            <a
-              is="emby-linkbutton"
-              href="https://github.com/k0lin/jellyfin-plugin-sso/projects/1"
-              class="button-link"
-              >roadmap
-            </a>
-            for more information.
-            <br />
-            To allow users to manage their own SSO accounts, including linking
-            SSO providers, and removing existing links, they need to visit
-            <a
-              is="emby-linkbutton"
-              id="sso-self-service-link"
-              class="button-link"
-              >the self service page </a
-            >. <br />
-            You can use
-            <a
-              is="emby-linkbutton"
-              href="https://jellyfin.org/docs/general/clients/web-config.html#custom-menu-links"
-              class="button-link"
-              >custom menu links
-            </a>
-            to accomplish this.
-          </p>
+          <div class="sso-config-notice-panel">
+            <p class="sso-kicker" data-i18n="config.OverviewTitle">
+              Before you save
+            </p>
+            <p class="sso-config-copy" data-i18n="config.RestartNotice">
+              Changes to this configuration require a Jellyfin restart.
+            </p>
+            <p class="sso-config-copy" data-i18n="config.UiCoverageNotice">
+              This UI currently manages OpenID Connect providers. Some advanced
+              options, including SAML provider setup, may still require the API.
+            </p>
+            <p class="sso-config-copy">
+              <span data-i18n="config.SelfServiceNotice">
+                Users can manage linked SSO accounts from the self-service
+                linking page.
+              </span>
+              <a
+                is="emby-linkbutton"
+                id="sso-self-service-link"
+                class="button-link"
+                data-i18n="config.SelfServiceLink"
+                >Open self-service linking</a
+              >.
+            </p>
+            <p class="sso-config-copy">
+              <span data-i18n="config.CustomMenuLinks">
+                Jellyfin custom menu links can expose that page from the main
+                menu.
+              </span>
+              <a
+                is="emby-linkbutton"
+                href="https://jellyfin.org/docs/general/clients/web-config.html#custom-menu-links"
+                class="button-link"
+                data-i18n="config.CustomMenuLinksLink"
+                >Learn about custom menu links</a
+              >.
+            </p>
+          </div>
 
-          <form id="sso-load-config" class="esqConfigurationForm">
+          <form
+            id="sso-load-config"
+            class="esqConfigurationForm sso-config-card"
+          >
             <div
               class="verticalSection"
               is="emby-collapse"
               title="Select Existing Provider to Modify"
+              data-i18n-title="config.ExistingProviderTitle"
             >
               <div class="collapseContent">
+                <div class="sso-config-card-heading">
+                  <div>
+                    <p
+                      class="sso-kicker"
+                      data-i18n="config.ExistingProviderKicker"
+                    >
+                      Existing providers
+                    </p>
+                    <h3
+                      class="sectionTitle"
+                      data-i18n="config.ExistingProviderTitle"
+                    >
+                      Load or delete a provider
+                    </h3>
+                    <p
+                      class="sso-config-copy"
+                      data-i18n="config.ExistingProviderDescription"
+                    >
+                      Select an OpenID provider to review, update, or remove its
+                      saved configuration.
+                    </p>
+                  </div>
+                </div>
                 <div class="selectContainer">
-                  <label class="selectLabel" for="selectProvider"
+                  <label
+                    class="selectLabel"
+                    for="selectProvider"
+                    data-i18n="config.fields.SelectProviderLabel"
                     >Name of OpenID Provider:
                   </label>
                   <select
@@ -90,39 +136,88 @@
                   </div>
                 </div>
 
-                <button
-                  id="LoadProvider"
-                  is="emby-button"
-                  type="button"
-                  class="raised button-submit block emby-button"
-                >
-                  <span>Load Provider</span>
-                </button>
+                <div class="sso-config-actions">
+                  <button
+                    id="LoadProvider"
+                    is="emby-button"
+                    type="button"
+                    class="raised button-submit emby-button"
+                  >
+                    <span data-i18n="config.buttons.LoadProvider"
+                      >Load Provider</span
+                    >
+                  </button>
 
-                <button
-                  id="DeleteProvider"
-                  is="emby-button"
-                  type="button"
-                  class="raised button-delete block emby-button"
-                >
-                  <span>Delete Provider</span>
-                </button>
+                  <button
+                    id="DeleteProvider"
+                    is="emby-button"
+                    type="button"
+                    class="raised button-delete emby-button"
+                  >
+                    <span data-i18n="config.buttons.DeleteProvider"
+                      >Delete Provider</span
+                    >
+                  </button>
+                </div>
               </div>
             </div>
           </form>
 
-          <form id="sso-new-oidc-provider" class="esqConfigurationForm">
+          <form
+            id="sso-new-oidc-provider"
+            class="esqConfigurationForm sso-config-card"
+          >
             <div
               is="emby-collapse"
               data-expanded="true"
               title="Add / Update Provider Configuration"
+              data-i18n-title="config.ProviderConfigurationTitle"
               class="verticalSection verticalSection-extrabottompadding"
             >
               <div class="collapseContent">
+                <div class="sso-config-card-heading">
+                  <div>
+                    <p
+                      class="sso-kicker"
+                      data-i18n="config.ProviderConfigurationKicker"
+                    >
+                      OpenID Connect
+                    </p>
+                    <h3
+                      class="sectionTitle"
+                      data-i18n="config.ProviderConfigurationTitle"
+                    >
+                      Provider configuration
+                    </h3>
+                    <p
+                      class="sso-config-copy"
+                      data-i18n="config.ProviderConfigurationDescription"
+                    >
+                      Create or update the OpenID Connect settings used for SSO
+                      sign-in and authorization.
+                    </p>
+                  </div>
+                </div>
+                <div class="sso-config-section-heading">
+                  <p
+                    class="sso-kicker"
+                    data-i18n="config.sections.ProviderIdentityKicker"
+                  >
+                    Provider identity
+                  </p>
+                  <h4 data-i18n="config.sections.ProviderIdentityTitle">
+                    Connection details
+                  </h4>
+                  <p data-i18n="config.sections.ProviderIdentityDescription">
+                    Name the provider and configure the OIDC endpoint and client
+                    credentials.
+                  </p>
+                </div>
                 <div class="inputContainer">
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="OidProviderName"
+                    data-i18n="config.fields.ProviderNameLabel"
                     >Name of OpenID Provider:</label
                   >
                   <input
@@ -132,7 +227,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.ProviderNameDescription"
+                  >
                     The name used by Jellyfin to identify the OpenID provider.
                     <br />
                     If an OpenID provider with a matching name does not exist, a
@@ -146,6 +244,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="OidEndpoint"
+                    data-i18n="config.fields.EndpointLabel"
                     >OpenID Endpoint:</label
                   >
                   <input
@@ -155,7 +254,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.EndpointDescription"
+                  >
                     The OpenID endpoint. Must have a .well-known path available.
                   </div>
                 </div>
@@ -164,6 +266,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="OidClientId"
+                    data-i18n="config.fields.ClientIdLabel"
                     >OpenID Client ID:</label
                   >
                   <input
@@ -173,14 +276,20 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.ClientIdDescription"
+                  >
                     The OpenID client ID, for this media server instance. This
                     is configured on the OIDC provider to uniquely identify
                     <strong>this</strong> Jellyfin instance.
                   </div>
                 </div>
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="OidSecret"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="OidSecret"
+                    data-i18n="config.fields.ClientSecretLabel"
                     >OpenID client secret:</label
                   >
                   <input
@@ -190,11 +299,29 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.ClientSecretDescription"
+                  >
                     The OpenID client secret. Randomly generated & shared.
                   </div>
                 </div>
 
+                <div class="sso-config-section-heading">
+                  <p
+                    class="sso-kicker"
+                    data-i18n="config.sections.AccessDefaultsKicker"
+                  >
+                    Access defaults
+                  </p>
+                  <h4 data-i18n="config.sections.AccessDefaultsTitle">
+                    Provider access
+                  </h4>
+                  <p data-i18n="config.sections.AccessDefaultsDescription">
+                    Decide whether this provider is active and how default
+                    library access is assigned.
+                  </p>
+                </div>
                 <div
                   class="checkboxContainer checkboxContainer-withDescription"
                 >
@@ -206,7 +333,7 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enabled</span>
+                    <span data-i18n="config.fields.EnabledLabel">Enabled</span>
                   </label>
                 </div>
 
@@ -221,9 +348,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable Authorization by Plugin</span>
+                    <span data-i18n="config.fields.EnableAuthorizationLabel"
+                      >Enable Authorization by Plugin</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableAuthorizationDescription"
+                  >
                     Determines if the plugin sets permissions for the user.
                     <br />
                     If false, the user will start with no permissions and an
@@ -245,9 +377,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable All Folders</span>
+                    <span data-i18n="config.fields.EnableAllFoldersLabel"
+                      >Enable All Folders</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableAllFoldersDescription"
+                  >
                     If enabled, all libraries will be accessible to any user
                     that logs in through this provider.
                   </div>
@@ -256,13 +393,17 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="EnabledFolders"
+                    data-i18n="config.fields.EnabledFoldersLabel"
                     >Enabled Folders:</label
                   >
                   <div
                     id="EnabledFolders"
                     class="checkboxList paperList checkboxList-paperList sso-folder-list sso-bordered-list"
                   ></div>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.EnabledFoldersDescription"
+                  >
                     Determines which libraries will be accessible to a user that
                     logs in through this provider.
                     <br />
@@ -271,8 +412,23 @@
                   </div>
                 </div>
 
+                <div class="sso-config-section-heading">
+                  <p class="sso-kicker" data-i18n="config.sections.RolesKicker">
+                    Authorization
+                  </p>
+                  <h4 data-i18n="config.sections.RolesTitle">
+                    Roles and folders
+                  </h4>
+                  <p data-i18n="config.sections.RolesDescription">
+                    Match roles from OIDC claims to login, admin, and library
+                    permissions.
+                  </p>
+                </div>
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="Roles"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="Roles"
+                    data-i18n="config.fields.RolesLabel"
                     >Roles:</label
                   >
                   <textarea
@@ -281,7 +437,10 @@
                     type="text"
                     class="sso-line-list emby-textarea"
                   ></textarea>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.RolesDescription"
+                  >
                     A list of roles, one role per-line to look for in the OpenID
                     response.
                     <br />
@@ -294,7 +453,10 @@
                 </div>
 
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="AdminRoles"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="AdminRoles"
+                    data-i18n="config.fields.AdminRolesLabel"
                     >Admin Roles:</label
                   >
                   <textarea
@@ -303,7 +465,10 @@
                     type="text"
                     class="sso-line-list emby-textarea"
                   ></textarea>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.AdminRolesDescription"
+                  >
                     A list of roles, one role per-line to look for in the OpenID
                     response.
                     <br />
@@ -314,6 +479,21 @@
                   </div>
                 </div>
 
+                <div class="sso-config-section-heading">
+                  <p
+                    class="sso-kicker"
+                    data-i18n="config.sections.LiveTvKicker"
+                  >
+                    Live TV
+                  </p>
+                  <h4 data-i18n="config.sections.LiveTvTitle">
+                    Live TV permissions
+                  </h4>
+                  <p data-i18n="config.sections.LiveTvDescription">
+                    Control Live TV access through default settings or
+                    role-based rules.
+                  </p>
+                </div>
                 <div
                   class="checkboxContainer checkboxContainer-withDescription"
                 >
@@ -325,18 +505,39 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable Role-Based Folder Access:</span>
+                    <span data-i18n="config.fields.EnableFolderRolesLabel"
+                      >Enable Role-Based Folder Access:</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableFolderRolesDescription"
+                  >
                     Determines if user roles should be used to control library
                     access.
                   </div>
                 </div>
 
+                <div class="sso-config-section-heading">
+                  <p
+                    class="sso-kicker"
+                    data-i18n="config.sections.ClaimsKicker"
+                  >
+                    Claims and profile
+                  </p>
+                  <h4 data-i18n="config.sections.ClaimsTitle">
+                    Claims, scopes, and user defaults
+                  </h4>
+                  <p data-i18n="config.sections.ClaimsDescription">
+                    Configure role claim parsing, requested scopes, username
+                    defaults, and avatar mapping.
+                  </p>
+                </div>
                 <div class="inputContainer">
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="FolderRoleMapping"
+                    data-i18n="config.fields.FolderRoleMappingLabel"
                     >Folder Role Mapping:</label
                   >
                   <button
@@ -344,12 +545,16 @@
                     id="AddRoleMapping"
                     type="button"
                     class="fab btnAddFolder submit"
-                    title="${Add}"
+                    title="Add"
+                    data-i18n-title="config.buttons.AddRoleMapping"
                   >
                     <span class="material-icons add" aria-hidden="true"></span>
                   </button>
                   <div id="FolderRoleMapping" class="sso-role-map"></div>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.FolderRoleMappingDescription"
+                  >
                     Map roles (given by <strong>"Role Claim"</strong>) to lists
                     of libraries. If a user has a given role, they will have
                     access to the corresponding libraries. If
@@ -369,9 +574,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable Live TV RBAC</span>
+                    <span data-i18n="config.fields.EnableLiveTvRolesLabel"
+                      >Enable Live TV RBAC</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableLiveTvRolesDescription"
+                  >
                     Determines whether the roles will be used to grant Live TV
                     privileges.
                   </div>
@@ -381,6 +591,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="LiveTvRoles"
+                    data-i18n="config.fields.LiveTvRolesLabel"
                     >Live TV Roles:</label
                   >
                   <textarea
@@ -389,7 +600,10 @@
                     type="text"
                     class="sso-line-list emby-textarea"
                   ></textarea>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.LiveTvRolesDescription"
+                  >
                     A list of roles, one role per-line to look for in the OpenID
                     response.
                     <br />
@@ -402,6 +616,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="LiveTvManagementRoles"
+                    data-i18n="config.fields.LiveTvManagementRolesLabel"
                     >Live TV Management Roles:</label
                   >
                   <textarea
@@ -410,7 +625,10 @@
                     type="text"
                     class="sso-line-list emby-textarea"
                   ></textarea>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.LiveTvManagementRolesDescription"
+                  >
                     A list of roles, one role per-line to look for in the OpenID
                     response.
                     <br />
@@ -430,9 +648,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable Live TV Access By Default</span>
+                    <span data-i18n="config.fields.EnableLiveTvLabel"
+                      >Enable Live TV Access By Default</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableLiveTvDescription"
+                  >
                     Determines whether the user can view Live TV by default.
                     <br />
                     This value is still used if <strong>Live TV RBAC</strong> is
@@ -451,9 +674,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Enable Live TV Management By Default</span>
+                    <span data-i18n="config.fields.EnableLiveTvManagementLabel"
+                      >Enable Live TV Management By Default</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.EnableLiveTvManagementDescription"
+                  >
                     Determines whether the user can manage Live TV by default.
                     <br />
                     This value is still used if <strong>Live TV RBAC</strong> is
@@ -462,7 +690,10 @@
                 </div>
 
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="RoleClaim"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="RoleClaim"
+                    data-i18n="config.fields.RoleClaimLabel"
                     >Role Claim:</label
                   >
                   <input
@@ -472,7 +703,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.RoleClaimDescription"
+                  >
                     This is the value in the OpenID response to check for roles.
                     The first element is the claim type, the subsequent values
                     are to parse the JSON of the claim value. Use a
@@ -489,7 +723,10 @@
                 </div>
 
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="OidScopes"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="OidScopes"
+                    data-i18n="config.fields.OidScopesLabel"
                     >Request Additional Scopes:</label
                   >
                   <textarea
@@ -499,7 +736,10 @@
                     type="text"
                     class="sso-line-list emby-textarea"
                   ></textarea>
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.OidScopesDescription"
+                  >
                     Specify additional scopes to include in the OIDC request.
                     <br />
                     One scope per line, each line should contain a scope name to
@@ -522,6 +762,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="DefaultProvider"
+                    data-i18n="config.fields.DefaultProviderLabel"
                     >Set default Provider:</label
                   >
                   <input
@@ -530,7 +771,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.DefaultProviderDescription"
+                  >
                     The set provider then gets assigned to the user after they
                     have logged in. If it is not set, nothing is changed. With
                     this, a user can login with SSO but is still able to log in
@@ -546,6 +790,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="DefaultUsernameClaim"
+                    data-i18n="config.fields.DefaultUsernameClaimLabel"
                     >Set default username claim:</label
                   >
                   <input
@@ -554,7 +799,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.DefaultUsernameClaimDescription"
+                  >
                     The default username claim to use from OpenID by default. If
                     it is not set, it defaults to
                     <code>preferred_username</code>.
@@ -565,6 +813,7 @@
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="AvatarUrlFormat"
+                    data-i18n="config.fields.AvatarUrlFormatLabel"
                     >Set avatar url format</label
                   >
                   <input
@@ -573,12 +822,32 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.AvatarUrlFormatDescription"
+                  >
                     The url of the avatar with sso variable format: example :
                     <code>https://example.com/@{user_id}.png</code>
                   </div>
                 </div>
 
+                <div
+                  class="sso-config-section-heading sso-config-section-heading-danger"
+                >
+                  <p
+                    class="sso-kicker"
+                    data-i18n="config.sections.SecurityKicker"
+                  >
+                    Security-sensitive
+                  </p>
+                  <h4 data-i18n="config.sections.SecurityTitle">
+                    Discovery and validation overrides
+                  </h4>
+                  <p data-i18n="config.sections.SecurityDescription">
+                    These options weaken OIDC discovery or validation. Use them
+                    only when required by a provider.
+                  </p>
+                </div>
                 <div class="checkboxContainer">
                   <label>
                     <input
@@ -588,7 +857,9 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Disable OpenID HTTPS Discovery (Insecure)</span>
+                    <span data-i18n="config.fields.DisableHttpsLabel"
+                      >Disable OpenID HTTPS Discovery (Insecure)</span
+                    >
                   </label>
                   <div class="fieldDescription checkboxFieldDescription"></div>
                 </div>
@@ -603,6 +874,7 @@
                       class="sso-toggle"
                     />
                     <span
+                      data-i18n="config.fields.DisablePushedAuthorizationLabel"
                       >Disable Pushed Authorization (Insecure). May be needed
                       for Authelia.</span
                     >
@@ -621,9 +893,14 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Do Not Validate OpenID Endpoints (Insecure)</span>
+                    <span data-i18n="config.fields.DoNotValidateEndpointsLabel"
+                      >Do Not Validate OpenID Endpoints (Insecure)</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.DoNotValidateEndpointsDescription"
+                  >
                     May be required for Google OpenID
                   </div>
                 </div>
@@ -636,7 +913,9 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Do Not Validate OpenID Issuer Name (Insecure)</span>
+                    <span data-i18n="config.fields.DoNotValidateIssuerNameLabel"
+                      >Do Not Validate OpenID Issuer Name (Insecure)</span
+                    >
                   </label>
                 </div>
                 <div
@@ -650,15 +929,23 @@
                       type="checkbox"
                       class="sso-toggle"
                     />
-                    <span>Do Not Load Profile Information</span>
+                    <span data-i18n="config.fields.DoNotLoadProfileLabel"
+                      >Do Not Load Profile Information</span
+                    >
                   </label>
-                  <div class="fieldDescription checkboxFieldDescription">
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.DoNotLoadProfileDescription"
+                  >
                     May be required for Cloudflare OpenID
                   </div>
                 </div>
 
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="RoleClaim"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="SchemeOverride"
+                    data-i18n="config.fields.SchemeOverrideLabel"
                     >Scheme Override</label
                   >
                   <input
@@ -667,14 +954,20 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.SchemeOverrideDescription"
+                  >
                     If the plugin is redirecting to an insecure URL, set this to
                     "https"
                   </div>
                 </div>
 
                 <div class="inputContainer">
-                  <label class="inputLabel inputLabelUnfocused" for="RoleClaim"
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="PortOverride"
+                    data-i18n="config.fields.PortOverrideLabel"
                     >Port Override</label
                   >
                   <input
@@ -683,7 +976,10 @@
                     type="text"
                     class="sso-text"
                   />
-                  <div class="fieldDescription">
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.PortOverrideDescription"
+                  >
                     If the plugin is redirecting to an incorrect port, set this
                     to the appropiate port
                   </div>
@@ -695,7 +991,7 @@
                   type="button"
                   class="raised button-submit block emby-button"
                 >
-                  <span>Save</span>
+                  <span data-i18n="config.buttons.Save">Save</span>
                 </button>
               </div>
             </div>

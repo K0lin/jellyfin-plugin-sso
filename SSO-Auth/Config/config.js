@@ -1,3 +1,87 @@
+const normalizeLocale = (locale) =>
+  (locale || "en-us").toLowerCase().replace("_", "-");
+
+const ssoI18n = {
+  locale: "en-us",
+  strings: {},
+  supportedLocales: ["en-us"],
+
+  detectLocale() {
+    const browserLocales = navigator.languages?.length
+      ? navigator.languages
+      : [navigator.language];
+    const normalizedLocales = browserLocales.map(normalizeLocale);
+
+    this.locale =
+      normalizedLocales.find((locale) =>
+        this.supportedLocales.includes(locale),
+      ) ||
+      normalizedLocales
+        .map((locale) => locale.split("-")[0])
+        .map((language) =>
+          this.supportedLocales.find(
+            (supportedLocale) => supportedLocale.split("-")[0] === language,
+          ),
+        )
+        .find(Boolean) ||
+      "en-us";
+
+    document.documentElement.lang = this.locale;
+  },
+
+  async load() {
+    this.detectLocale();
+
+    const loadLocale = async (locale) => {
+      const response = await fetch(
+        ApiClient.getUrl("web/configurationpage") +
+          `?name=SSO-Auth-i18n-${locale}.json`,
+      );
+      if (!response.ok) {
+        throw new Error(`Unable to load locale ${locale}`);
+      }
+
+      return response.json();
+    };
+
+    try {
+      this.strings = await loadLocale(this.locale);
+    } catch (error) {
+      if (this.locale !== "en-us") {
+        this.locale = "en-us";
+        this.strings = await loadLocale(this.locale);
+      } else {
+        console.warn(error);
+        this.strings = {};
+      }
+    }
+
+    document.documentElement.lang = this.locale;
+    document.title = this.t("config.PageTitle");
+  },
+
+  t(key, ...args) {
+    const value =
+      key.split(".").reduce((current, part) => current?.[part], this.strings) ||
+      key;
+
+    return args.reduce(
+      (text, arg, index) => text.replace(`{${index}}`, arg),
+      value,
+    );
+  },
+
+  localize(view) {
+    view.querySelectorAll("[data-i18n]").forEach((element) => {
+      element.textContent = this.t(element.getAttribute("data-i18n"));
+    });
+
+    view.querySelectorAll("[data-i18n-title]").forEach((element) => {
+      element.title = this.t(element.getAttribute("data-i18n-title"));
+    });
+  },
+};
+
 const ssoConfigurationPage = {
   pluginUniqueId: "505ce9d1-d916-42fa-86ca-673ef241d7df",
   loadConfiguration: (page) => {
@@ -53,12 +137,9 @@ const ssoConfigurationPage = {
   folders.Items: array of objects, with .Id & .Name
   */
   _populateFolders: (container, folders) => {
-    container
-      .querySelectorAll(".emby-checkbox-label")
-      .forEach((e) => e.remove());
-
     const checkboxes = folders.Items.map((folder) => {
       var out = document.createElement("label");
+      out.classList.add("sso-folder-checkbox-label");
 
       out.innerHTML = `
         <input
@@ -73,9 +154,7 @@ const ssoConfigurationPage = {
       return out;
     });
 
-    checkboxes.forEach((e) => {
-      container.appendChild(e);
-    });
+    container.replaceChildren(...checkboxes);
   },
 
   populateRoleMappings: (folder_role_mappings, container) => {
@@ -90,7 +169,7 @@ const ssoConfigurationPage = {
       elem.innerHTML = `
       <label
         class="inputLabel inputLabelUnfocused sso-role-mapping-input-label" 
-      >Role:</label>
+      >${ssoI18n.t("config.fields.RoleMappingRoleLabel")}</label>
       <div class="listItem">
         <input
           is="emby-input"
@@ -258,7 +337,7 @@ const ssoConfigurationPage = {
   deleteProvider: (page, provider_name) => {
     if (
       !window.confirm(
-        `Are you sure you want to delete the provider ${provider_name}?`,
+        ssoI18n.t("config.messages.DeleteProviderConfirm", provider_name),
       )
     ) {
       return;
@@ -280,7 +359,7 @@ const ssoConfigurationPage = {
           Dashboard.processPluginConfigurationUpdateResult(result);
           ssoConfigurationPage.loadConfiguration(page);
 
-          Dashboard.alert("Provider removed");
+          Dashboard.alert(ssoI18n.t("config.messages.ProviderRemoved"));
 
           resolve();
         });
@@ -349,63 +428,83 @@ const ssoConfigurationPage = {
           ssoConfigurationPage.loadProvider(page, provider_name);
 
           page.querySelector("#selectProvider").value = provider_name;
-          Dashboard.alert("Settings saved.");
+          Dashboard.alert(ssoI18n.t("config.messages.SettingsSaved"));
           resolve();
         });
       });
     });
   },
   addTextAreaStyle: (view) => {
+    if (view.querySelector("#sso-config-style")) {
+      return;
+    }
+
     var style = document.createElement("link");
+    style.id = "sso-config-style";
     style.rel = "stylesheet";
     style.href =
       ApiClient.getUrl("web/configurationpage") + "?name=SSO-Auth.css";
     view.appendChild(style);
   },
+
+  bindEvents: (view) => {
+    if (view.dataset.ssoConfigEventsBound === "true") {
+      return;
+    }
+
+    view.dataset.ssoConfigEventsBound = "true";
+
+    view.querySelector("#SaveProvider").addEventListener("click", (e) => {
+      const target_provider = view.querySelector("#OidProviderName").value;
+
+      ssoConfigurationPage.saveProvider(view, target_provider);
+
+      e.preventDefault();
+      return false;
+    });
+
+    view.querySelector("#LoadProvider").addEventListener("click", (e) => {
+      const target_provider = view.querySelector("#selectProvider").value;
+
+      ssoConfigurationPage.loadProvider(view, target_provider);
+
+      e.preventDefault();
+      return false;
+    });
+
+    view.querySelector("#DeleteProvider").addEventListener("click", (e) => {
+      const target_provider = view.querySelector("#selectProvider").value;
+
+      ssoConfigurationPage.deleteProvider(view, target_provider);
+
+      e.preventDefault();
+      return false;
+    });
+
+    view.querySelector("#AddRoleMapping").addEventListener("click", (e) => {
+      const container = view.querySelector("#FolderRoleMapping");
+      const current_mappings =
+        ssoConfigurationPage.serializeRoleMappings(container);
+      current_mappings.push({ Role: "", Folders: [] });
+      console.log(current_mappings);
+      ssoConfigurationPage.populateRoleMappings(current_mappings, container);
+
+      e.preventDefault();
+      return false;
+    });
+  },
 };
 
 export default function (view) {
   ssoConfigurationPage.addTextAreaStyle(view);
-  ssoConfigurationPage.loadConfiguration(view);
-
-  ssoConfigurationPage.listArgumentsByType(view);
-
-  view.querySelector("#SaveProvider").addEventListener("click", (e) => {
-    const target_provider = view.querySelector("#OidProviderName").value;
-
-    ssoConfigurationPage.saveProvider(view, target_provider);
-
-    e.preventDefault();
-    return false;
-  });
-
-  view.querySelector("#LoadProvider").addEventListener("click", (e) => {
-    const target_provider = view.querySelector("#selectProvider").value;
-
-    ssoConfigurationPage.loadProvider(view, target_provider);
-
-    e.preventDefault();
-    return false;
-  });
-
-  view.querySelector("#DeleteProvider").addEventListener("click", (e) => {
-    const target_provider = view.querySelector("#selectProvider").value;
-
-    ssoConfigurationPage.deleteProvider(view, target_provider);
-
-    e.preventDefault();
-    return false;
-  });
-
-  view.querySelector("#AddRoleMapping").addEventListener("click", (e) => {
-    const container = view.querySelector("#FolderRoleMapping");
-    const current_mappings =
-      ssoConfigurationPage.serializeRoleMappings(container);
-    current_mappings.push({ Role: "", Folders: [] });
-    console.log(current_mappings);
-    ssoConfigurationPage.populateRoleMappings(current_mappings, container);
-  });
+  ssoConfigurationPage.bindEvents(view);
 
   view.querySelector("#sso-self-service-link").href =
     ApiClient.getUrl("/SSOViews/linking");
+
+  ssoI18n.load().then(() => {
+    ssoI18n.localize(view);
+    ssoConfigurationPage.loadConfiguration(view);
+    ssoConfigurationPage.listArgumentsByType(view);
+  });
 }

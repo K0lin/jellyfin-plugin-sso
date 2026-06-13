@@ -72,6 +72,11 @@ public class SSOPlugin : BasePlugin<PluginConfiguration>, IPlugin, IHasWebPages
                 Name = Name + "-linking.js",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Config.linking.js"
             },
+            new PluginPageInfo
+            {
+                Name = Name + "-i18n-en-us.json",
+                EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.en-us.json"
+            },
         };
     }
 

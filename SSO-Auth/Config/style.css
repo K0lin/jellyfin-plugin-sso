@@ -61,6 +61,138 @@
   padding-left: 0.5em;
 }
 
+.sso-config-shell {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 68rem;
+  padding-bottom: 5rem !important;
+}
+
+.sso-config-header {
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.sso-config-heading {
+  min-width: 0;
+}
+
+.sso-config-title {
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sso-config-copy {
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.55;
+  margin: 0.5rem 0 0;
+  max-width: 52rem;
+}
+
+.sso-config-notice-panel,
+.sso-config-card .collapseContent {
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.sso-config-notice-panel {
+  margin-top: 1.5rem;
+}
+
+.sso-config-card {
+  margin-top: 1.5rem;
+}
+
+.sso-config-card .verticalSection {
+  margin: 0;
+}
+
+.sso-config-card-heading {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.sso-config-card-heading .sectionTitle {
+  margin: 0;
+}
+
+.sso-config-card .inputContainer,
+.sso-config-card .selectContainer,
+.sso-config-card .checkboxContainer {
+  margin-top: 1rem;
+  max-width: 48rem;
+}
+
+.sso-config-section-heading {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 2rem;
+  max-width: 52rem;
+  padding-top: 1.35rem;
+}
+
+.sso-config-card-heading + .sso-config-section-heading {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.sso-config-section-heading h4 {
+  font-size: 1.12rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sso-config-section-heading p:not(.sso-kicker) {
+  color: rgba(255, 255, 255, 0.64);
+  line-height: 1.5;
+  margin: 0.35rem 0 0;
+}
+
+.sso-config-section-heading-danger .sso-kicker {
+  color: #f87171;
+}
+
+.sso-config-section-heading-danger {
+  border-top-color: rgba(248, 113, 113, 0.32);
+}
+
+.sso-config-card .fieldDescription {
+  color: rgba(255, 255, 255, 0.64);
+  line-height: 1.45;
+  max-width: 44rem;
+}
+
+.sso-config-card .sso-bordered-list {
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 0.25rem;
+  max-height: 18rem;
+  overflow: auto;
+  padding: 0.75rem;
+}
+
+.sso-config-card .sso-role-mapping-container {
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 0.25rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+}
+
+.sso-config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.sso-config-actions .emby-button,
+.sso-config-card #SaveProvider {
+  margin: 0;
+}
+
 .sso-linking-shell {
   box-sizing: border-box;
   margin: 0 auto;
