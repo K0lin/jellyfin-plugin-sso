@@ -323,7 +323,10 @@ const ssoConfigurationPage = {
         });
 
         form_elements.check_fields.forEach((id) => {
-          if (provider[id]) page.querySelector("#" + id).checked = provider[id];
+          const element = page.querySelector("#" + id);
+          element.checked = Object.prototype.hasOwnProperty.call(provider, id)
+            ? provider[id]
+            : element.defaultChecked;
         });
 
         form_elements.role_map_fields.forEach((id) => {
