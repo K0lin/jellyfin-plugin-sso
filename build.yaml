@@ -1,7 +1,7 @@
 name: "SSO Authentication"
 guid: "505ce9d1-d916-42fa-86ca-673ef241d7df"
 imageUrl: "https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/main/img/logo.png"
-version: "4.0.0.5"
+version: "5.0.0.0"
 targetAbi: "10.11.11.0"
 framework: "net9.0"
 owner: "k0lin"
@@ -15,7 +15,7 @@ artifacts:
   - "Duende.IdentityModel.OidcClient.dll"
   - "Duende.IdentityModel.dll"
 changelog: |
-  4.0.0.5: Update Jellyfin dependencies and target ABI to 10.11.11
+  5.0.0.0: Full redesign of configuration and linking UI, i18n support, RBAC controls in UI
   4.0.0.4: Fix security issue in SAML
   4.0.0.0: Jellyfin 10.11
   3.5.3.0: Allow for OID-provided avatars, various bugfixes and workarounds
