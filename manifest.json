@@ -1,114 +1,114 @@
 [
   {
     "category": "Authentication",
-    "description": "This plugin allows users to sign in through an SSO provider (such as Google, Facebook, or your own provider). This enables one-click signin.\nReview documentation at https://github.com/9p4/jellyfin-plugin-sso\n",
+    "description": "This plugin allows users to sign in through an SSO provider (such as Google, Facebook, or your own provider). This enables one-click signin.\nReview documentation at https://github.com/k0lin/jellyfin-plugin-sso\n",
     "guid": "505ce9d1-d916-42fa-86ca-673ef241d7df",
     "name": "SSO Authentication",
     "overview": "Authenticate users against an SSO provider.",
-    "owner": "9p4",
+    "owner": "k0lin",
     "versions": [
       {
         "changelog": "There is a critical security fix for SAML. Please update as soon as possible. Thanks to N.P. for finding the issue.\r\n\r\nAdditional bugfixes are also included.\r\n\r\n## What's Changed\r\n* Add Pocket ID config steps by @mhlas7 in https://github.com/9p4/jellyfin-plugin-sso/pull/312\r\n* fix: invalidate state immediately after auth by @jon4hz in https://github.com/9p4/jellyfin-plugin-sso/pull/343\r\n* Add kanidm config steps by @Joker9944 in https://github.com/9p4/jellyfin-plugin-sso/pull/347\r\n* Update README dead link, add warning for permission overwritten by @ForsakenRei in https://github.com/9p4/jellyfin-plugin-sso/pull/318\r\n* Bugfix: Prevent KeyNotFoundExceptions in OidPost by @mandos21 in https://github.com/9p4/jellyfin-plugin-sso/pull/349\r\n\r\n## New Contributors\r\n* @mhlas7 made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/312\r\n* @jon4hz made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/343\r\n* @Joker9944 made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/347\r\n* @ForsakenRei made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/318\r\n* @mandos21 made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/349\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v4.0.0.3...v4.0.0.4",
         "checksum": "1e7908585ebee256203a0869dcdfbaf8",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.4/sso-authentication_4.0.0.4.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v4.0.0.4/sso-authentication_4.0.0.4.zip",
         "targetAbi": "10.11.0.0",
-        "timestamp": "2026-03-20T03:13:34Z",
+        "timestamp": "2026-06-12T22:46:17Z",
         "version": "4.0.0.4"
       },
       {
         "changelog": "More CI fixes\r\n\r\n## What's Changed\r\n* fix: consistently use OpenID instead of OID on the config page by @CFenner in https://github.com/9p4/jellyfin-plugin-sso/pull/193\r\n* Support DisableHttps/DoNotValidateIssuerName in SSOController.OidChallenge by @andreblanke in https://github.com/9p4/jellyfin-plugin-sso/pull/239\r\n* Allow to disable pushed authorization by @bdovaz in https://github.com/9p4/jellyfin-plugin-sso/pull/244\r\n* Update oddstr13/jellyfin-plugin-repository-manager by @bdovaz in https://github.com/9p4/jellyfin-plugin-sso/pull/247\r\n* Avatar via OIDC Provider by @Estyms in https://github.com/9p4/jellyfin-plugin-sso/pull/202\r\n* Allow port override by @bdovaz in https://github.com/9p4/jellyfin-plugin-sso/pull/246\r\n* Fix artifact names by @bdovaz in https://github.com/9p4/jellyfin-plugin-sso/pull/248\r\n* Prevent force updating username by @FeikoJoosten in https://github.com/9p4/jellyfin-plugin-sso/pull/251\r\n* remove deprecated redirect uri from readme by @hendrik1120 in https://github.com/9p4/jellyfin-plugin-sso/pull/280\r\n* Match the styling of the redirection page with Jellyfin colors and font by @kernelb00t in https://github.com/9p4/jellyfin-plugin-sso/pull/269\r\n* Use punycode URL for redirect page - OIDC by @babbitt in https://github.com/9p4/jellyfin-plugin-sso/pull/265\r\n\r\n## New Contributors\r\n* @CFenner made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/193\r\n* @andreblanke made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/239\r\n* @bdovaz made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/244\r\n* @Estyms made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/202\r\n* @FeikoJoosten made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/251\r\n* @kernelb00t made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/269\r\n* @babbitt made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/265\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.2.4...v4.0.0.3",
         "checksum": "ea6673c5c9aeddcf01a38604046e7ffc",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v4.0.0.3/sso-authentication_4.0.0.3.zip",
         "targetAbi": "10.11.0.0",
-        "timestamp": "2025-10-21T14:39:25Z",
+        "timestamp": "2026-06-12T22:46:16Z",
         "version": "4.0.0.3"
       },
       {
         "changelog": "## What's Changed\r\n* Update version in SSO-Auth.csproj by @lf- in https://github.com/9p4/jellyfin-plugin-sso/pull/169\r\n* update authelia example to authelia v4.38 by @hendrik1120 in https://github.com/9p4/jellyfin-plugin-sso/pull/170\r\n* Update providers.md to include android app keycloak OIDC redirect URI by @tbelway in https://github.com/9p4/jellyfin-plugin-sso/pull/190\r\n* Update plugin to function with Jellyfin 10.9\r\n\r\n## New Contributors\r\n* @lf- made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/169\r\n* @hendrik1120 made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/170\r\n* @tbelway made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/190\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.2.3...v3.5.2.4",
         "checksum": "e325bcf4c60c5cae3e0cd4614faae07a",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.2.4/sso-authentication_3.5.2.4.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.2.4/sso-authentication_3.5.2.4.zip",
         "targetAbi": "10.9.0.0",
-        "timestamp": "2024-05-13T13:34:38Z",
+        "timestamp": "2026-06-12T22:46:16Z",
         "version": "3.5.2.4"
       },
       {
         "changelog": "## What's Changed\r\n* Remove jellyfin_credentials before loading iframe by @sbogomolov in https://github.com/9p4/jellyfin-plugin-sso/pull/163\r\n* [allow for better endpoint validation](https://github.com/9p4/jellyfin-plugin-sso/commit/d51e5069d6584953e93f93ec161b909388cd7ebe)\r\n\r\n## New Contributors\r\n* @sbogomolov made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/163\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.2.2...v3.5.2.3",
         "checksum": "ba6ce744fd21c0b9452b23eeeb99e0e1",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.2.3/sso-authentication_3.5.2.3.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.2.3/sso-authentication_3.5.2.3.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2024-02-21T22:11:24Z",
+        "timestamp": "2026-06-12T22:46:15Z",
         "version": "3.5.2.3"
       },
       {
         "changelog": "[allow linking to work with new paths](https://github.com/9p4/jellyfin-plugin-sso/commit/9321c25f2028101cee19f4bf90083aecb60bdba5)\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.2.1...v3.5.2.2",
         "checksum": "94d0f6acf8eaead11c25680ee13cde7f",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.2.2/sso-authentication_3.5.2.2.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.2.2/sso-authentication_3.5.2.2.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2024-01-22T21:39:33Z",
+        "timestamp": "2026-06-12T22:46:15Z",
         "version": "3.5.2.2"
       },
       {
         "changelog": "Hotfix for https://github.com/9p4/jellyfin-plugin-sso/issues/150",
         "checksum": "a2c47db686895bc7cd4594bdda25286e",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.2.1/sso-authentication_3.5.2.1.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.2.1/sso-authentication_3.5.2.1.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2023-10-18T05:12:18Z",
+        "timestamp": "2026-06-12T22:46:14Z",
         "version": "3.5.2.1"
       },
       {
         "changelog": "feat: allow overriding redirect scheme\r\n\r\nWow, I'm putting out a lot of releases lately. Sorry about that.\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.1.1...v3.5.2.0",
         "checksum": "83b29edbc0c6722606bae9f2de095d88",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.2.0/sso-authentication_3.5.2.0.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.2.0/sso-authentication_3.5.2.0.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2023-08-07T17:17:13Z",
+        "timestamp": "2026-06-12T22:46:14Z",
         "version": "3.5.2.0"
       },
       {
         "changelog": "fix: change iframe URL to point to the web UI instead of the root\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.1.0...v3.5.1.1",
         "checksum": "c5e6dd973ebef1ef80d7d59ef7ad0815",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.1.1/sso-authentication_3.5.1.1.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.1.1/sso-authentication_3.5.1.1.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2023-08-07T12:44:02Z",
+        "timestamp": "2026-06-12T22:46:13Z",
         "version": "3.5.1.1"
       },
       {
         "changelog": "* fix: improve final redirect (#109)\r\n* style: fix configPage style (prettier)\r\n* docs: detail Google requiring disabling of OpenID endpoint validation\r\n* fix: make SAML paths better; improve and add OID discovery defaults\r\n* docs: clarify plugin resetting permissions\r\n* style: fix README.md style\r\n* docs: document how to set login disclaimer (#16)\r\n* feat: clarify redirect paths (#84)\r\n* fix: Remove funding\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.5.0.0...v3.5.1.0",
         "checksum": "574ab1a090ba1726a01b0861e990eeb8",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.1.0/sso-authentication_3.5.1.0.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.1.0/sso-authentication_3.5.1.0.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2023-08-06T20:38:07Z",
+        "timestamp": "2026-06-12T22:46:12Z",
         "version": "3.5.1.0"
       },
       {
         "changelog": "## What's Changed\r\n* feat: add Live TV management\r\n* fix: make user creation more robust by @fredriklindberg in https://github.com/9p4/jellyfin-plugin-sso/pull/72\r\n* fix: don't include port in redirect URL for 80 and 443 by @fredriklindberg in https://github.com/9p4/jellyfin-plugin-sso/pull/71\r\n* feat: allow configuration of preferred username claim by @9p4 in https://github.com/9p4/jellyfin-plugin-sso/pull/74\r\n* feat: allow for HTTPS to be disabled in OpenID discovery by @9p4 in https://github.com/9p4/jellyfin-plugin-sso/pull/77\r\n* fix: #83 Trim whitespace in user provided strings by @9p4 in https://github.com/9p4/jellyfin-plugin-sso/pull/89\r\n* null check before trim() by @esmondmissen in https://github.com/9p4/jellyfin-plugin-sso/pull/99\r\n* fix: error in logs for #81 by @esmondmissen in https://github.com/9p4/jellyfin-plugin-sso/pull/100\r\n* docs: 📝 add authentik redirect uri step by @adamzvolanek in https://github.com/9p4/jellyfin-plugin-sso/pull/127\r\n* fix: fix null pointer errors in various places\r\n\r\n## New Contributors\r\n* @fredriklindberg made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/72\r\n* @esmondmissen made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/99\r\n* @adamzvolanek made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/127\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.4.0.2...v3.5.0.0",
         "checksum": "5621a407cce8907bfa5cad9d3ce52924",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.5.0.0/sso-authentication_3.5.0.0.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.5.0.0/sso-authentication_3.5.0.0.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2023-08-05T22:55:07Z",
+        "timestamp": "2026-06-12T22:46:12Z",
         "version": "3.5.0.0"
       },
       {
         "changelog": "# Self Service: \r\n\r\n* Users can link existing jellyfin accounts to SSO provider accounts\r\n* Users can remove existing links\r\n* Users can configure multiple SSO provider accounts\r\n* Account names no longer have to match across Jellyfin -> SSO provider\r\n  * Eg, can link google OIDC, with a `sub` of `asfbeausfahgajsfjasd-ugly-sub` to jellyfin username `matthew`\r\n\r\n## What's Changed\r\n\r\n### Features\r\n\r\n* Implement Canonical Linking + Self Service by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/34\r\n   * Account names no longer have to match to be linked\r\n\r\n### Fixes\r\n\r\n* Fix ID Provider incorrectly resetting on login by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/33\r\n\r\n### Documentation\r\n\r\n* Document Provider Specific Configuration, Small Readme Update by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/31\r\n* docs: move build-from-source to contributing section, link vscode config by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/63\r\n* docs: :memo: document new plugin install mechanism by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/56\r\n\r\n### CI / Build\r\n\r\n* Add github action for publishing releases by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/39\r\n* Revert \"Add github action for publishing releases\" by @9p4 in https://github.com/9p4/jellyfin-plugin-sso/pull/40\r\n* Revert \"Revert \"Add github action for publishing releases\"\" by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/46\r\n* pin version of oddstr13/jprm to specific commit by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/48\r\n* ci: pin kevinjil/jprm-action to specific sha by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/50\r\n* ci: ignore prereleases when publishing manifest by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/52\r\n* ci: add checksum to nightly builds by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/53\r\n* ci: only run checksum agaisnt zip files by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/54\r\n* build: ignore .vscode entirely in gitignore by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/62\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.3.0.0...v3.4.0.2",
         "checksum": "485d67094e39cc5b11470abea6b46427",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.4.0.2/sso-authentication_3.4.0.0.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.4.0.2/sso-authentication_3.4.0.0.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2022-08-18T09:10:59Z",
+        "timestamp": "2026-06-12T22:46:11Z",
         "version": "3.4.0.0"
       },
       {
         "changelog": "## What's Changed\r\n* Clean up controller by @crobibero in https://github.com/9p4/jellyfin-plugin-sso/pull/12\r\n* Fallback Authentication Provider by @Pfuenzle in https://github.com/9p4/jellyfin-plugin-sso/pull/9\r\n* Add UI Page for OIDC Configuration by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/18\r\n* Add prettier workflow to CI by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/22\r\n* Allow requesting additional scopes in OIDC flows by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/24\r\n* CI: Prettier Workflow: Remove explicit branch ref from checkout by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/25\r\n* CI: lint css files in prettier workflow by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/30\r\n* Improve UX on config page by @matthewstrasiotto in https://github.com/9p4/jellyfin-plugin-sso/pull/27\r\n\r\n## New Contributors\r\n* @matthewstrasiotto made their first contribution in https://github.com/9p4/jellyfin-plugin-sso/pull/18\r\n\r\n**Full Changelog**: https://github.com/9p4/jellyfin-plugin-sso/compare/v3.2.0.0...v3.3.0.0",
         "checksum": "79357968612a992e6494167fd065dafb",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/v3.3.0.0/sso-authentication_3.3.0.0.zip",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/v3.3.0.0/sso-authentication_3.3.0.0.zip",
         "targetAbi": "10.8.0.0",
-        "timestamp": "2022-05-22T16:17:07Z",
+        "timestamp": "2026-06-12T22:46:10Z",
         "version": "3.3.0.0"
       },
       {
         "changelog": "Nightly build\n",
-        "checksum": "517d0ece631d5d1ae35dabc8f90b6636",
-        "sourceUrl": "https://github.com/9p4/jellyfin-plugin-sso/releases/download/nightly/sso-authentication_0.0.0.9000.zip",
-        "targetAbi": "10.11.0.0",
-        "timestamp": "2022-07-01T01:20:33Z",
+        "checksum": "5f7c49374dc1ea14e18d48f4012acb62",
+        "sourceUrl": "https://github.com/K0lin/jellyfin-plugin-sso/releases/download/nightly/sso-authentication_0.0.0.9000.zip",
+        "targetAbi": "10.11.11.0",
+        "timestamp": "2026-06-12T22:46:11Z",
         "version": "0.0.0.9000"
       }
     ]
