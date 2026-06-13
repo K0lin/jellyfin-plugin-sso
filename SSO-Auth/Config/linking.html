@@ -3,9 +3,10 @@
   <head>
     <!-- Polyfill styles that are missing when serving without dashboard -->
     <link rel="stylesheet" href="emby-restyle.css" />
+    <link rel="stylesheet" href="style.css" />
     <link id="theme-style" rel="stylesheet" />
     <script defer>
-      import("./ApiClient.js").then((clientModule) => {
+      import("./ApiClient.js").then(() => {
         import("./linking.js").then((renderer) => {
           const view = document.querySelector("#sso-config-page");
 
@@ -30,68 +31,100 @@
       data-controller="__plugin/SSO-Auth-linking.js"
     >
       <div data-role="content">
-        <div class="content-primary">
-          <div class="sectionTitleContainer flex align-items-center">
-            <a class="raised emby-button home" style="display: none">
-              <span class="material-icons home" aria-hidden="true"></span
-              ><span>Home</span>
-            </a>
-            <h2 class="sectionTitle">SSO Linking:</h2>
-            <a
-              is="emby-button"
-              class="raised button-alt headerHelpButton"
-              target="_blank"
-              href="https://github.com/k0lin/jellyfin-plugin-sso"
-              >${Help}</a
-            >
-          </div>
-          <p>
-            Use the
-            <span class="fab" aria-hidden="true">
-              <span class="material-icons add" aria-hidden="true"></span>
-            </span>
-            button to create a new link for the given provider.
-            <br />
-            You may remove existing links by selecting them and pressing the
-            "Delete" button.
-          </p>
-          <p>
-            See the
-            <a
-              is="emby-linkbutton"
-              href="https://github.com/k0lin/jellyfin-plugin-sso"
-              class="button-link"
-              >homepage</a
-            >
-            and
-            <a
-              is="emby-linkbutton"
-              href="https://github.com/k0lin/jellyfin-plugin-sso/issues"
-              class="button-link"
-              >issue tracker
-            </a>
-            for more information.
-          </p>
-          <label class="checkbox-wrapper">
-            <input is="emby-checkbox" id="enable-delete" type="checkbox" />
-            <span class="checkbox-label">Enable "Delete" button.</span>
-          </label>
-          <h1 class="sectionTitle">Link a provider</h1>
-          <div class="verticalSection" title="Link a provider">
-            <h2 class="sectionTitle">SAML</h2>
-            <div id="sso-provider-list-saml" data-id="saml"></div>
-            <h2 class="sectionTitle">OID</h2>
-            <div id="sso-provider-list-oid" data-id="oid"></div>
-          </div>
-          <button
-            id="btn-delete-selected-links"
-            type="button"
-            class="button-delete raised emby-button"
-            disabled="true"
+        <div class="content-primary sso-linking-shell">
+          <div
+            class="sectionTitleContainer flex align-items-center sso-linking-header"
           >
-            <span class="material-icons delete" aria-hidden="true"></span>
-            <span>Delete Selected</span>
-          </button>
+            <div class="sso-linking-heading">
+              <p class="sso-kicker">Account linking</p>
+              <h2 class="sectionTitle sso-linking-title">SSO Linking</h2>
+              <p class="sso-linking-copy">
+                Link this Jellyfin user to external OIDC or SAML identities,
+                then remove stale links only after enabling delete mode.
+              </p>
+            </div>
+            <div class="sso-header-actions">
+              <a
+                class="raised emby-button home sso-home-button"
+                style="display: none"
+              >
+                <span class="material-icons home" aria-hidden="true"></span>
+                <span>Home</span>
+              </a>
+              <a
+                is="emby-button"
+                class="raised emby-button button-alt sso-help-button"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/k0lin/jellyfin-plugin-sso"
+              >
+                <span class="material-icons help" aria-hidden="true"></span>
+                <span>Help</span>
+              </a>
+            </div>
+          </div>
+
+          <section class="sso-linking-panel">
+            <div class="sso-panel-heading">
+              <div>
+                <h3 class="sectionTitle">Link a provider</h3>
+                <p class="sso-linking-copy">
+                  Use Link account on a provider card to add a new identity.
+                </p>
+              </div>
+            </div>
+
+            <div class="sso-provider-sections">
+              <section class="sso-provider-section">
+                <div class="sso-provider-section-header">
+                  <span class="sso-provider-badge">SAML</span>
+                  <p>Identity providers using SAML assertions.</p>
+                </div>
+                <div
+                  id="sso-provider-list-saml"
+                  class="sso-provider-grid"
+                  data-id="saml"
+                ></div>
+              </section>
+
+              <section class="sso-provider-section">
+                <div class="sso-provider-section-header">
+                  <span class="sso-provider-badge">OIDC</span>
+                  <p>Identity providers using OpenID Connect.</p>
+                </div>
+                <div
+                  id="sso-provider-list-oid"
+                  class="sso-provider-grid"
+                  data-id="oid"
+                ></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="sso-danger-panel">
+            <div>
+              <h3 class="sectionTitle">Remove linked identities</h3>
+              <p class="sso-linking-copy">
+                Select linked identities above, enable delete mode, then delete
+                the selected links.
+              </p>
+            </div>
+            <div class="sso-delete-actions">
+              <label class="checkbox-wrapper sso-delete-toggle">
+                <input is="emby-checkbox" id="enable-delete" type="checkbox" />
+                <span class="checkbox-label">Enable delete mode</span>
+              </label>
+              <button
+                id="btn-delete-selected-links"
+                type="button"
+                class="button-delete raised emby-button"
+                disabled="true"
+              >
+                <span class="material-icons delete" aria-hidden="true"></span>
+                <span>Delete Selected</span>
+              </button>
+            </div>
+          </section>
         </div>
       </div>
     </div>

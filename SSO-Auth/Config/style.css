@@ -60,3 +60,254 @@
 .sso-role-mapping-input-label {
   padding-left: 0.5em;
 }
+
+.sso-linking-shell {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 58rem;
+  padding-bottom: 5rem !important;
+}
+
+.sso-linking-panel,
+.sso-danger-panel {
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sso-kicker {
+  color: #00a4dc;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.45rem;
+  text-transform: uppercase;
+}
+
+.sso-linking-header {
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.sso-linking-heading {
+  min-width: 0;
+}
+
+.sso-linking-title {
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sso-linking-copy {
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.55;
+  margin: 0.5rem 0 0;
+  max-width: 46rem;
+}
+
+.sso-home-button {
+  align-self: flex-start;
+  white-space: nowrap;
+}
+
+.sso-header-actions {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+.sso-help-button {
+  align-items: center;
+  background: rgba(0, 164, 220, 0.14) !important;
+  border: 1px solid rgba(125, 211, 252, 0.35);
+  color: #d8f3ff !important;
+  display: inline-flex;
+  gap: 0.45rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.sso-help-button:hover {
+  background: rgba(0, 164, 220, 0.24) !important;
+}
+
+.sso-linking-panel,
+.sso-danger-panel {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+}
+
+.sso-panel-heading,
+.sso-danger-panel {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.sso-panel-heading .sectionTitle,
+.sso-danger-panel .sectionTitle {
+  margin: 0;
+}
+
+.sso-provider-sections {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.sso-provider-section {
+  margin-top: 1rem;
+}
+
+.sso-provider-section-header {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sso-provider-section-header p {
+  color: rgba(255, 255, 255, 0.64);
+  margin: 0;
+  text-align: right;
+}
+
+.sso-provider-badge,
+.sso-provider-mode {
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.38rem 0.62rem;
+  text-transform: uppercase;
+}
+
+.sso-provider-badge {
+  background: rgba(0, 164, 220, 0.18);
+  color: #7dd3fc;
+}
+
+.sso-provider-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.sso-provider-links-container,
+.sso-empty-state {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.25rem;
+  padding: 1rem;
+}
+
+.sso-provider-links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 10rem;
+}
+
+.sso-provider-card-heading {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+  justify-content: space-between;
+}
+
+.sso-provider-link-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sso-provider-mode {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.sso-provider-existing-links-container {
+  flex: 1;
+}
+
+.sso-linked-title {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.sso-linked-empty,
+.sso-empty-state {
+  color: rgba(255, 255, 255, 0.58);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.sso-provider-link-checkbox-wrapper {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.5rem;
+  padding: 0.55rem 0.65rem;
+}
+
+.sso-provider-link-checkbox-wrapper .sso-link-checkbox {
+  accent-color: #2196f3;
+  flex: 0 0 auto;
+  height: 1.15rem;
+  margin: 0;
+  width: 1.15rem;
+}
+
+.sso-provider-link-checkbox-text {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  margin-bottom: 0;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.sso-provider-add-link {
+  justify-content: center;
+  margin: 0;
+}
+
+.sso-delete-actions {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.sso-delete-toggle .checkbox-label {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+@media (max-width: 46rem) {
+  .sso-linking-header,
+  .sso-header-actions,
+  .sso-panel-heading,
+  .sso-danger-panel,
+  .sso-provider-section-header,
+  .sso-delete-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sso-provider-section-header p {
+    text-align: left;
+  }
+
+  .sso-provider-grid {
+    grid-template-columns: 1fr;
+  }
+}

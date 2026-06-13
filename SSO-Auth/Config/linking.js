@@ -30,39 +30,53 @@ const ssoConfigLinking = {
     });
   },
   loadProviderList: (container, providers, provider_mode) => {
+    if (!providers.length) {
+      const emptyState = document.createElement("div");
+      emptyState.classList.add("sso-empty-state");
+      emptyState.textContent = `No ${provider_mode.toUpperCase()} providers are configured yet.`;
+      container.appendChild(emptyState);
+      return;
+    }
+
     providers.forEach((provider_name) => {
       var provider_config = document.createElement("div");
       provider_config.classList.add("sso-provider-links-container");
       provider_config.setAttribute("data-id", provider_name);
 
-      provider_config.innerHTML = `
-      <label
-        class="inputLabel inputLabelUnfocused sso-provider-link-title"
-      >${provider_name}
-      </label>
-      <a
-        class="fab emby-button sso-provider-add-link"
-      >
-        <span class="material-icons add" aria-hidden="true"></span>
-      </a>
-      <div
-        class="sso-provider-existing-links-container"
-        data-provider="${provider_name}"
-      ></div>
-      `;
-      var add_provider = provider_config.querySelector(
-        ".sso-provider-add-link",
-      );
+      const heading = document.createElement("div");
+      heading.classList.add("sso-provider-card-heading");
 
-      //const provider_name_css = ssoConfigLinking.safeCSSId(provider_name);
-      //provider_link.id = "sso-provider-" + provider_name_css;
-      //provider_link.classList.add("sso-provider-" + provider_name_css);
-      add_provider.classList.add("sso-provider");
+      const title = document.createElement("div");
+      title.classList.add("sso-provider-link-title");
+      title.textContent = provider_name;
+
+      const mode = document.createElement("span");
+      mode.classList.add("sso-provider-mode");
+      mode.textContent = provider_mode.toUpperCase();
+
+      heading.appendChild(title);
+      heading.appendChild(mode);
+
+      const linkContainer = document.createElement("div");
+      linkContainer.classList.add("sso-provider-existing-links-container");
+      linkContainer.setAttribute("data-provider", provider_name);
+
+      const add_provider = document.createElement("a");
+      add_provider.classList.add(
+        "raised",
+        "emby-button",
+        "sso-provider-add-link",
+        "sso-provider",
+      );
+      add_provider.innerHTML = `<span class="material-icons add" aria-hidden="true"></span><span>Link account</span>`;
 
       add_provider.href = ApiClient.getUrl(
         `/SSO/${provider_mode}/p/${provider_name}?isLinking=true`,
       );
 
+      provider_config.appendChild(heading);
+      provider_config.appendChild(linkContainer);
+      provider_config.appendChild(add_provider);
       container.appendChild(provider_config);
     });
 
@@ -80,8 +94,12 @@ const ssoConfigLinking = {
           console.log({ provider_map, currentUserId });
 
           Object.keys(provider_map).forEach((provider_name) => {
-            const provider_container = container.querySelector(
-              `.sso-provider-existing-links-container[data-provider="${provider_name}"]`,
+            const provider_container = [
+              ...container.querySelectorAll(
+                ".sso-provider-existing-links-container",
+              ),
+            ].find(
+              (elem) => elem.getAttribute("data-provider") === provider_name,
             );
             ssoConfigLinking.populateExistingLinks(
               provider_container,
@@ -101,25 +119,40 @@ const ssoConfigLinking = {
     provider_name,
     canonical_names,
   ) => {
-    container
-      .querySelectorAll(".sso-provider-link-checkbox-wrapper")
-      .forEach((e) => e.remove());
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!canonical_names.length) {
+      const emptyState = document.createElement("p");
+      emptyState.classList.add("sso-linked-empty");
+      emptyState.textContent = "No identity linked to this provider.";
+      container.appendChild(emptyState);
+      return;
+    }
+
+    const sectionTitle = document.createElement("p");
+    sectionTitle.classList.add("sso-linked-title");
+    sectionTitle.textContent = "Linked identities";
+    container.appendChild(sectionTitle);
 
     const checkboxes = canonical_names.map((canonical_name) => {
       var out = document.createElement("label");
       out.classList.add("sso-provider-link-checkbox-wrapper");
-      out.classList.add("checkbox-wrapper");
-      out.innerHTML = `
-        <input
-          is="emby-checkbox"
-          class="sso-link-checkbox"
-          data-id="${canonical_name}"
-          data-mode="${provider_mode}"
-          data-provider="${provider_name}"
-          type="checkbox"
-        />
-        <span class="checkbox-label">${canonical_name}</span>
-      `;
+
+      const input = document.createElement("input");
+      input.classList.add("sso-link-checkbox");
+      input.setAttribute("data-id", canonical_name);
+      input.setAttribute("data-mode", provider_mode);
+      input.setAttribute("data-provider", provider_name);
+      input.type = "checkbox";
+
+      const label = document.createElement("span");
+      label.classList.add("sso-provider-link-checkbox-text");
+      label.textContent = canonical_name;
+
+      out.appendChild(input);
+      out.appendChild(label);
       return out;
     });
 
