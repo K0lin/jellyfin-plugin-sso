@@ -880,10 +880,16 @@ public class SSOController : ControllerBase
     /// <returns>Whether this API endpoint succeeded.</returns>
     [Authorize(Policy = Policies.RequiresElevation)]
     [HttpPost("Unregister/{username}")]
-    public ActionResult Unregister(string username, [FromBody] string provider)
+    public async Task<ActionResult> Unregister(string username, [FromBody] string provider)
     {
         User user = _userManager.GetUserByName(username);
+        if (user == null)
+        {
+            return NotFound("User not found");
+        }
+
         user.AuthenticationProviderId = provider;
+        await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
 
         return Ok();
     }
@@ -944,6 +950,7 @@ public class SSOController : ControllerBase
             user.AuthenticationProviderId = GetType().FullName;
             // https://jonathancrozier.com/blog/how-to-generate-a-cryptographically-secure-random-string-in-dot-net-with-c-sharp
             user.Password = _cryptoProvider.CreatePasswordHash(Convert.ToBase64String(RandomNumberGenerator.GetBytes(64))).ToString();
+            await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
 
             // Make sure there aren't any trailing existing links
             var links = GetCanonicalLinks(mode, provider);
@@ -1228,38 +1235,76 @@ public class SSOController : ControllerBase
     private async Task<AuthenticationResult> Authenticate(Guid userId, bool isAdmin, bool enableAuthorization, bool enableAllFolders, string[] enabledFolders, bool enableLiveTv, bool enableLiveTvAdmin, AuthResponse authResponse, string defaultProvider, string avatarUrl, bool preserveAdmin)
     {
         User user = _userManager.GetUserById(userId);
+
+        // Jellyfin 10.11 persists permission/preference rows reliably through the policy path.
+        var policy = _userManager.GetUserDto(user).Policy;
+
+        // UpdatePolicyAsync clears and re-adds schedules; give it fresh, untracked instances.
+        policy.AccessSchedules = (policy.AccessSchedules ?? Array.Empty<AccessSchedule>())
+            .Select(schedule => new AccessSchedule(schedule.DayOfWeek, schedule.StartHour, schedule.EndHour, userId))
+            .ToArray();
+
+        // GetUserDto does not populate this permission on some Jellyfin versions; preserve it.
+        policy.EnableLyricManagement = user.HasPermission(PermissionKind.EnableLyricManagement);
+
         if (enableAuthorization)
         {
-            bool currentIsAdmin = user.HasPermission(PermissionKind.IsAdministrator);
             if (isAdmin)
             {
                 _logger.LogInformation("User {Username} matched an admin role; granting IsAdministrator.", user.Username);
-                user.SetPermission(PermissionKind.IsAdministrator, true);
+                policy.IsAdministrator = true;
             }
-            else if (preserveAdmin && currentIsAdmin)
+            else if (preserveAdmin && policy.IsAdministrator)
             {
                 _logger.LogInformation(
-                    "User {Username} did not match an admin role in this login, but PreserveAdminPermissions is enabled and the user is already an administrator; leaving IsAdministrator unchanged.",
+                    "User {Username} did not match an admin role in this login, but PreserveAdminPermissions is enabled; leaving IsAdministrator unchanged.",
                     user.Username);
             }
             else
             {
-                if (currentIsAdmin)
+                if (policy.IsAdministrator)
                 {
                     _logger.LogWarning(
                         "User {Username} did not match an admin role; revoking IsAdministrator because PreserveAdminPermissions is disabled.",
                         user.Username);
                 }
 
-                user.SetPermission(PermissionKind.IsAdministrator, false);
+                policy.IsAdministrator = false;
             }
 
-            user.SetPermission(PermissionKind.EnableAllFolders, enableAllFolders);
+            policy.EnableAllFolders = enableAllFolders;
             if (!enableAllFolders)
             {
-                user.SetPreference(PreferenceKind.EnabledFolders, enabledFolders);
+                var folderIds = new List<Guid>();
+                foreach (string folder in enabledFolders ?? Array.Empty<string>())
+                {
+                    if (Guid.TryParse(folder, out var folderId))
+                    {
+                        folderIds.Add(folderId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Ignoring enabled folder {Folder}: not a valid folder id.", folder);
+                    }
+                }
+
+                policy.EnabledFolders = folderIds.ToArray();
             }
         }
+
+        policy.EnableLiveTvAccess = enableLiveTv;
+        policy.EnableLiveTvManagement = enableLiveTvAdmin;
+
+        if (!string.IsNullOrEmpty(defaultProvider))
+        {
+            policy.AuthenticationProviderId = defaultProvider;
+            _logger.LogInformation("Set default login provider to " + defaultProvider);
+        }
+
+        await _userManager.UpdatePolicyAsync(userId, policy).ConfigureAwait(false);
+
+        // UpdatePolicyAsync refreshes the cached user entity; use the current instance below.
+        user = _userManager.GetUserById(userId);
 
         if (avatarUrl is not null)
         {
@@ -1303,6 +1348,7 @@ public class SSOController : ControllerBase
 
                     await _providerManager.SaveImage(stream, contentType, user.ProfileImage.Path)
                         .ConfigureAwait(false);
+                    await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -1310,11 +1356,6 @@ public class SSOController : ControllerBase
                 _logger.LogError(e.Message);
             }
         }
-
-        user.SetPermission(PermissionKind.EnableLiveTvAccess, enableLiveTv);
-        user.SetPermission(PermissionKind.EnableLiveTvManagement, enableLiveTvAdmin);
-
-        await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
 
         var authRequest = new AuthenticationRequest();
         authRequest.UserId = user.Id;
@@ -1324,12 +1365,6 @@ public class SSOController : ControllerBase
         authRequest.DeviceId = authResponse.DeviceID;
         authRequest.DeviceName = authResponse.DeviceName;
         _logger.LogInformation("Auth request created...");
-        if (!string.IsNullOrEmpty(defaultProvider))
-        {
-            user.AuthenticationProviderId = defaultProvider;
-            await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
-            _logger.LogInformation("Set default login provider to " + defaultProvider);
-        }
 
         return await _sessionManager.AuthenticateDirect(authRequest).ConfigureAwait(false);
     }
