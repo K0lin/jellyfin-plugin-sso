@@ -14,6 +14,7 @@
     <None Remove="Config\config.js" />
     <None Remove="Config\style.css" />
     <None Remove="Config\linking.html" />
+    <None Remove="Config\i18n\en-us.json" />
     <None Remove="Views\apiClient.js" />
     <None Remove="Views\jellyfin-apiClient.esm.min.js" />
     <None Remove="Views\emby-restyle.css" />
@@ -22,6 +23,7 @@
     <EmbeddedResource Include="Config\style.css" />
     <EmbeddedResource Include="Config\linking.html" />
     <EmbeddedResource Include="Config\linking.js" />
+    <EmbeddedResource Include="Config\i18n\en-us.json" />
     <EmbeddedResource Include="Views\apiClient.js" />
     <EmbeddedResource Include="Views\jellyfin-apiClient.esm.min.js" />
     <EmbeddedResource Include="Views\emby-restyle.css" />

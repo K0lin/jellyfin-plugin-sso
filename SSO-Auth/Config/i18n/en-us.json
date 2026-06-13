@@ -1,0 +1,24 @@
+{
+  "common": {
+    "Home": "Home",
+    "Help": "Help"
+  },
+  "linking": {
+    "PageTitle": "SSO Linking",
+    "AccountLinkingKicker": "Account linking",
+    "AccountLinkingTitle": "SSO Linking",
+    "AccountLinkingDescription": "Link this Jellyfin user to external OIDC or SAML identities, then remove stale links only after enabling delete mode.",
+    "LinkProviderTitle": "Link a provider",
+    "LinkProviderDescription": "Use Link account on a provider card to add a new identity.",
+    "SamlProviderDescription": "Identity providers using SAML assertions.",
+    "OidcProviderDescription": "Identity providers using OpenID Connect.",
+    "RemoveLinkedIdentitiesTitle": "Remove linked identities",
+    "RemoveLinkedIdentitiesDescription": "Select linked identities above, enable delete mode, then delete the selected links.",
+    "EnableDeleteMode": "Enable delete mode",
+    "DeleteSelected": "Delete Selected",
+    "LinkAccount": "Link account",
+    "LinkedIdentities": "Linked identities",
+    "NoIdentityLinked": "No identity linked to this provider.",
+    "NoProvidersConfigured": "No {0} providers are configured yet."
+  }
+}

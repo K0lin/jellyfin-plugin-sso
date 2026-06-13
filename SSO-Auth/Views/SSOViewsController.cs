@@ -78,7 +78,7 @@ public class SSOViewsController : ControllerBase
     /// </summary>
     /// <param name="viewName">The name of the view / asset to fetch.</param>
     /// <returns>The html view with the specified name.</returns>
-    [HttpGet("{viewName}")]
+    [HttpGet("{**viewName}")]
     public ActionResult GetView([FromRoute] string viewName)
     {
         return ServeView(viewName);

@@ -100,6 +100,11 @@ public class SSOPlugin : BasePlugin<PluginConfiguration>, IPlugin, IHasWebPages
             },
             new PluginPageInfo
             {
+                Name = "i18n/en-us.json",
+                EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.en-us.json"
+            },
+            new PluginPageInfo
+            {
                 Name = "ApiClient.js",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Views.apiClient.js"
             },
