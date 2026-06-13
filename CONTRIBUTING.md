@@ -162,6 +162,34 @@ We are always open to better docs! The main place documentation could be improve
 
 We use [commitlint](https://commitlint.js.org) for linting commit messages.
 
+Commit messages must follow the [Conventional Commits](https://www.conventionalcommits.org) standard:
+
+```
+<type>(<scope>): <short description>
+```
+
+Common types:
+
+| Type       | When to use                                             |
+| ---------- | ------------------------------------------------------- |
+| `feat`     | A new feature                                           |
+| `fix`      | A bug fix                                               |
+| `chore`    | Maintenance tasks, dependency updates, build changes    |
+| `docs`     | Documentation only changes                              |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `test`     | Adding or updating tests                                |
+| `style`    | Formatting, missing semicolons, etc. (no logic change)  |
+| `ci`       | Changes to CI/CD configuration                          |
+
+Examples:
+
+```
+feat(saml): add support for custom attribute mapping
+fix(oidc): handle null response from provider
+chore: update Jellyfin SDK to 10.9.0
+docs: add Authentik provider configuration example
+```
+
 ### C#
 
 We format all C# code according to the .NET formatter. Run `dotnet build .` and fix any warnings that come up.
