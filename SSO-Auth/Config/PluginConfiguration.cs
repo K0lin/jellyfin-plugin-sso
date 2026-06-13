@@ -80,6 +80,11 @@ public class SamlConfig
     public string[] AdminRoles { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether existing administrator permissions are preserved when the SAML response does not contain an admin role.
+    /// </summary>
+    public bool PreserveAdminPermissions { get; set; }
+
+    /// <summary>
     /// Gets or sets what roles are checked to determine whether the user is allowed to use Jellyfin.
     /// </summary>
     public string[] Roles { get; set; }
@@ -207,6 +212,11 @@ public class OidConfig
     /// Gets or sets the roles that are checked to determine whether the user is an administrator.
     /// </summary>
     public string[] AdminRoles { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether existing administrator permissions are preserved when the OpenID response does not contain an admin role.
+    /// </summary>
+    public bool PreserveAdminPermissions { get; set; }
 
     /// <summary>
     /// Gets or sets what roles are checked to determine whether the user is allowed to use Jellyfin.

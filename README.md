@@ -191,6 +191,7 @@ These all require authorization. Append an API key to the end of the request: `c
   - `enabledFolders`: array of strings. If `enableAllFolders` is set to false, then this will be used to determine what folders the users who log in through this provider are allowed to use.
   - `roles`: array of strings. This validates the SAML response against the `Role` attribute. If a user has any of these roles, then the user is authenticated. Leave blank to disable role checking.
   - `adminRoles`: array of strings. This uses SAML response's `Role` attributes. If a user has any of these roles, then the user is an admin. Leave blank to disable (default is to not enable admin permissions).
+  - `preserveAdminPermissions`: boolean. When true, the plugin can elevate users to administrator from SAML roles but will not revoke the administrator flag from an account that already has it. Defaults to `false`, which makes SAML the strict source of truth for admin status.
   - `enableFolderRoles`: boolean. Determines if role-based folder access should be used.
   - `folderRoleMapping`: object in the format "role": string and "folders": array of strings. The user with this role will have access to the following folders if `enableFolderRoles` is enabled. To get the IDs of the folders, GET the `/Library/MediaFolders` URL with an API key. Look for the `Id` attribute.
   - `enableLiveTvRoles`: boolean. Determines if role-based Live TV access should be used.
@@ -230,6 +231,7 @@ These all require authorization. Append an API key to the end of the request: `c
   - `enabledFolders`: array of strings. If `enableAllFolders` is set to false, then this will be used to determine what folders the users who log in through this provider are allowed to use.
   - `roles`: array of strings. This validates the OpenID response against the claim set in `roleClaim`. If a user has any of these roles, then the user is authenticated. Leave blank to disable role checking. This currently only works for Keycloak (to my knowledge).
   - `adminRoles`: array of strings. This uses the OpenID response against the claim set in `roleClaim`. If a user has any of these roles, then the user is an admin. Leave blank to disable (default is to not enable admin permissions).
+  - `preserveAdminPermissions`: boolean. When true, the plugin can elevate users to administrator from OIDC roles but will not revoke the administrator flag from an account that already has it. Defaults to `false`, which makes OIDC the strict source of truth for admin status.
   - `enableFolderRoles`: boolean. Determines if role-based folder access should be used.
   - `folderRoleMapping`: object in the format "role": string and "folders": array of strings. The user with this role will have access to the following folders if `enableFolderRoles` is enabled. To get the IDs of the folders, GET the `/Library/MediaFolders` URL with an API key. Look for the `Id` attribute.
   - `enableLiveTvRoles`: boolean. Determines if role-based Live TV access should be used.
@@ -259,6 +261,8 @@ These all require authorization. Append an API key to the end of the request: `c
 ## Limitations
 
 Logging in with an SSO account that has the same username as an existing Jellyfin account will override the permissions for the user. Use caution when overriding the administrator account!
+
+By default, administrator status is managed strictly from SSO admin roles when `enableAuthorization` is enabled. If an existing administrator does not match an admin role during login, the plugin can revoke the administrator flag. Set `preserveAdminPermissions` to `true` to prevent SSO logins from demoting existing administrators. Other managed permissions, such as folder access and Live TV access, are still updated on every login when `enableAuthorization` is enabled.
 
 ~~There is no GUI to sign in. You have to make it yourself! The buttons should redirect to something like this: [https://myjellyfin.example.com/sso/SAML/start/clientid](https://myjellyfin.example.com/sso/SAML/start/clientid) replacing `clientid` with the provider client ID and `SAML` with the auth scheme (either `SAML` or `OID`).~~
 

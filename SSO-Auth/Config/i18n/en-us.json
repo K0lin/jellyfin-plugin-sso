@@ -71,6 +71,8 @@
       "RolesDescription": "Roles to look for in the OpenID response, one per line. Users with any listed role are authenticated. Leave blank to disable role checking.",
       "AdminRolesLabel": "Admin Roles:",
       "AdminRolesDescription": "Admin roles to look for in the OpenID response, one per line. Users with any listed role receive administrator privileges.",
+      "PreserveAdminPermissionsLabel": "Preserve Existing Admin Permissions",
+      "PreserveAdminPermissionsDescription": "When enabled, the plugin can grant administrator access from matching admin roles but will not revoke administrator access from an account that already has it. Leave disabled to make OIDC the strict source of truth for admin status.",
       "EnableFolderRolesLabel": "Enable Role-Based Folder Access:",
       "EnableFolderRolesDescription": "Determines if user roles control library access.",
       "FolderRoleMappingLabel": "Folder Role Mapping:",
