@@ -1,3 +1,80 @@
+const normalizeLocale = (locale) =>
+  (locale || "en-us").toLowerCase().replace("_", "-");
+
+const ssoI18n = {
+  locale: "en-us",
+  strings: {},
+  supportedLocales: ["en-us"],
+
+  detectLocale() {
+    const browserLocales = navigator.languages?.length
+      ? navigator.languages
+      : [navigator.language];
+    const normalizedLocales = browserLocales.map(normalizeLocale);
+
+    this.locale =
+      normalizedLocales.find((locale) =>
+        this.supportedLocales.includes(locale),
+      ) ||
+      normalizedLocales
+        .map((locale) => locale.split("-")[0])
+        .map((language) =>
+          this.supportedLocales.find(
+            (supportedLocale) => supportedLocale.split("-")[0] === language,
+          ),
+        )
+        .find(Boolean) ||
+      "en-us";
+
+    document.documentElement.lang = this.locale;
+  },
+
+  async load() {
+    this.detectLocale();
+
+    const loadLocale = async (locale) => {
+      const response = await fetch(`./i18n/${locale}.json`);
+      if (!response.ok) {
+        throw new Error(`Unable to load locale ${locale}`);
+      }
+
+      return response.json();
+    };
+
+    try {
+      this.strings = await loadLocale(this.locale);
+    } catch (error) {
+      if (this.locale !== "en-us") {
+        this.locale = "en-us";
+        this.strings = await loadLocale(this.locale);
+      } else {
+        console.warn(error);
+        this.strings = {};
+      }
+    }
+
+    document.documentElement.lang = this.locale;
+    document.title = this.t("linking.PageTitle");
+  },
+
+  t(key, ...args) {
+    const value =
+      key.split(".").reduce((current, part) => current?.[part], this.strings) ||
+      key;
+
+    return args.reduce(
+      (text, arg, index) => text.replace(`{${index}}`, arg),
+      value,
+    );
+  },
+
+  localize(view) {
+    view.querySelectorAll("[data-i18n]").forEach((element) => {
+      element.textContent = this.t(element.getAttribute("data-i18n"));
+    });
+  },
+};
+
 const ssoConfigLinking = {
   pluginUniqueId: "505ce9d1-d916-42fa-86ca-673ef241d7df",
   loadProviders: (view) => {
@@ -33,7 +110,10 @@ const ssoConfigLinking = {
     if (!providers.length) {
       const emptyState = document.createElement("div");
       emptyState.classList.add("sso-empty-state");
-      emptyState.textContent = `No ${provider_mode.toUpperCase()} providers are configured yet.`;
+      emptyState.textContent = ssoI18n.t(
+        "linking.NoProvidersConfigured",
+        provider_mode.toUpperCase(),
+      );
       container.appendChild(emptyState);
       return;
     }
@@ -68,7 +148,7 @@ const ssoConfigLinking = {
         "sso-provider-add-link",
         "sso-provider",
       );
-      add_provider.innerHTML = `<span class="material-icons add" aria-hidden="true"></span><span>Link account</span>`;
+      add_provider.innerHTML = `<span class="material-icons add" aria-hidden="true"></span><span>${ssoI18n.t("linking.LinkAccount")}</span>`;
 
       add_provider.href = ApiClient.getUrl(
         `/SSO/${provider_mode}/p/${provider_name}?isLinking=true`,
@@ -126,14 +206,14 @@ const ssoConfigLinking = {
     if (!canonical_names.length) {
       const emptyState = document.createElement("p");
       emptyState.classList.add("sso-linked-empty");
-      emptyState.textContent = "No identity linked to this provider.";
+      emptyState.textContent = ssoI18n.t("linking.NoIdentityLinked");
       container.appendChild(emptyState);
       return;
     }
 
     const sectionTitle = document.createElement("p");
     sectionTitle.classList.add("sso-linked-title");
-    sectionTitle.textContent = "Linked identities";
+    sectionTitle.textContent = ssoI18n.t("linking.LinkedIdentities");
     container.appendChild(sectionTitle);
 
     const checkboxes = canonical_names.map((canonical_name) => {
@@ -203,7 +283,9 @@ const ssoConfigLinking = {
   },
 };
 
-export default function (view) {
+export default async function (view) {
+  await ssoI18n.load();
+  ssoI18n.localize(view);
   ssoConfigLinking.loadProviders(view);
 
   view.querySelector("#enable-delete").addEventListener("change", (e) => {

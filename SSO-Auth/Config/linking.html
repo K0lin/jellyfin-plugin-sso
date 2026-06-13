@@ -36,9 +36,19 @@
             class="sectionTitleContainer flex align-items-center sso-linking-header"
           >
             <div class="sso-linking-heading">
-              <p class="sso-kicker">Account linking</p>
-              <h2 class="sectionTitle sso-linking-title">SSO Linking</h2>
-              <p class="sso-linking-copy">
+              <p class="sso-kicker" data-i18n="linking.AccountLinkingKicker">
+                Account linking
+              </p>
+              <h2
+                class="sectionTitle sso-linking-title"
+                data-i18n="linking.AccountLinkingTitle"
+              >
+                SSO Linking
+              </h2>
+              <p
+                class="sso-linking-copy"
+                data-i18n="linking.AccountLinkingDescription"
+              >
                 Link this Jellyfin user to external OIDC or SAML identities,
                 then remove stale links only after enabling delete mode.
               </p>
@@ -49,7 +59,7 @@
                 style="display: none"
               >
                 <span class="material-icons home" aria-hidden="true"></span>
-                <span>Home</span>
+                <span data-i18n="common.Home">Home</span>
               </a>
               <a
                 is="emby-button"
@@ -59,7 +69,7 @@
                 href="https://github.com/k0lin/jellyfin-plugin-sso"
               >
                 <span class="material-icons help" aria-hidden="true"></span>
-                <span>Help</span>
+                <span data-i18n="common.Help">Help</span>
               </a>
             </div>
           </div>
@@ -67,8 +77,13 @@
           <section class="sso-linking-panel">
             <div class="sso-panel-heading">
               <div>
-                <h3 class="sectionTitle">Link a provider</h3>
-                <p class="sso-linking-copy">
+                <h3 class="sectionTitle" data-i18n="linking.LinkProviderTitle">
+                  Link a provider
+                </h3>
+                <p
+                  class="sso-linking-copy"
+                  data-i18n="linking.LinkProviderDescription"
+                >
                   Use Link account on a provider card to add a new identity.
                 </p>
               </div>
@@ -78,7 +93,9 @@
               <section class="sso-provider-section">
                 <div class="sso-provider-section-header">
                   <span class="sso-provider-badge">SAML</span>
-                  <p>Identity providers using SAML assertions.</p>
+                  <p data-i18n="linking.SamlProviderDescription">
+                    Identity providers using SAML assertions.
+                  </p>
                 </div>
                 <div
                   id="sso-provider-list-saml"
@@ -90,7 +107,9 @@
               <section class="sso-provider-section">
                 <div class="sso-provider-section-header">
                   <span class="sso-provider-badge">OIDC</span>
-                  <p>Identity providers using OpenID Connect.</p>
+                  <p data-i18n="linking.OidcProviderDescription">
+                    Identity providers using OpenID Connect.
+                  </p>
                 </div>
                 <div
                   id="sso-provider-list-oid"
@@ -103,8 +122,16 @@
 
           <section class="sso-danger-panel">
             <div>
-              <h3 class="sectionTitle">Remove linked identities</h3>
-              <p class="sso-linking-copy">
+              <h3
+                class="sectionTitle"
+                data-i18n="linking.RemoveLinkedIdentitiesTitle"
+              >
+                Remove linked identities
+              </h3>
+              <p
+                class="sso-linking-copy"
+                data-i18n="linking.RemoveLinkedIdentitiesDescription"
+              >
                 Select linked identities above, enable delete mode, then delete
                 the selected links.
               </p>
@@ -112,7 +139,12 @@
             <div class="sso-delete-actions">
               <label class="checkbox-wrapper sso-delete-toggle">
                 <input is="emby-checkbox" id="enable-delete" type="checkbox" />
-                <span class="checkbox-label">Enable delete mode</span>
+                <span
+                  class="checkbox-label"
+                  data-i18n="linking.EnableDeleteMode"
+                >
+                  Enable delete mode
+                </span>
               </label>
               <button
                 id="btn-delete-selected-links"
@@ -121,7 +153,7 @@
                 disabled="true"
               >
                 <span class="material-icons delete" aria-hidden="true"></span>
-                <span>Delete Selected</span>
+                <span data-i18n="linking.DeleteSelected">Delete Selected</span>
               </button>
             </div>
           </section>
