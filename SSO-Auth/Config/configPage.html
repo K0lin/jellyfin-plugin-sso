@@ -479,6 +479,33 @@
                   </div>
                 </div>
 
+                <div
+                  class="checkboxContainer checkboxContainer-withDescription"
+                >
+                  <label>
+                    <input
+                      is="emby-checkbox"
+                      id="PreserveAdminPermissions"
+                      name="PreserveAdminPermissions"
+                      type="checkbox"
+                      class="sso-toggle"
+                    />
+                    <span
+                      data-i18n="config.fields.PreserveAdminPermissionsLabel"
+                      >Preserve Existing Admin Permissions</span
+                    >
+                  </label>
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.PreserveAdminPermissionsDescription"
+                  >
+                    When enabled, the plugin can grant administrator access from
+                    matching admin roles but will not revoke administrator
+                    access from an account that already has it. Leave disabled
+                    to make OIDC the strict source of truth for admin status.
+                  </div>
+                </div>
+
                 <div class="sso-config-section-heading">
                   <p
                     class="sso-kicker"
