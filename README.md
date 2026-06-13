@@ -262,7 +262,7 @@ These all require authorization. Append an API key to the end of the request: `c
 
 Logging in with an SSO account that has the same username as an existing Jellyfin account will override the permissions for the user. Use caution when overriding the administrator account!
 
-By default, administrator status is managed strictly from SSO admin roles when `enableAuthorization` is enabled. If an existing administrator does not match an admin role during login, the plugin can revoke the administrator flag. Set `preserveAdminPermissions` to `true` to prevent SSO logins from demoting existing administrators. Other managed permissions, such as folder access and Live TV access, are still updated on every login when `enableAuthorization` is enabled.
+By default, administrator status is managed strictly from SSO admin roles when `enableAuthorization` is enabled. If an existing administrator does not match an admin role during login, the plugin can revoke the administrator flag. Set `preserveAdminPermissions` to `true` to prevent SSO logins from demoting existing administrators. Other managed permissions, such as folder access and Live TV access, are still updated on every login when `enableAuthorization` is enabled and are persisted through Jellyfin's user policy path.
 
 ~~There is no GUI to sign in. You have to make it yourself! The buttons should redirect to something like this: [https://myjellyfin.example.com/sso/SAML/start/clientid](https://myjellyfin.example.com/sso/SAML/start/clientid) replacing `clientid` with the provider client ID and `SAML` with the auth scheme (either `SAML` or `OID`).~~
 
