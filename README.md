@@ -65,7 +65,7 @@ This is my first time writing C# so please take all of the code written here wit
 
 ## Installing
 
-Add the package repo [https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json](https://raw.githubusercontent.com/9p4/jellyfin-plugin-sso/manifest-release/manifest.json) to your Jellyfin plugin repositories.
+Add the package repo [https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json](https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json) to your Jellyfin plugin repositories.
 
 Then, install the plugin from the plugin catalog!
 
