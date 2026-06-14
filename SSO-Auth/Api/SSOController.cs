@@ -615,7 +615,7 @@ public class SSOController : ControllerBase
             var samlRoles = samlResponse.GetCustomAttributes("Role").ToList();
             foreach (string role in samlRoles)
             {
-                foreach (string allowedRole in config.Roles)
+                foreach (string allowedRole in config.Roles ?? Array.Empty<string>())
                 {
                     if (allowedRole.Equals(role))
                     {
