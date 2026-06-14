@@ -198,6 +198,8 @@ We format all C# code according to the .NET formatter. Run `dotnet build .` and 
 
 We use [Prettier](https://prettier.io) to format these files.
 
+Run `npm ci` once to install the pinned formatter, then use `npm run format` to format files or `npm run format:check` to verify formatting without writing changes.
+
 <!-- TODO
 
 -->
