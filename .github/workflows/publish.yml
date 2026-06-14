@@ -5,6 +5,11 @@ on:
     types:
       - released
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to publish assets to"
+        required: true
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,6 +21,7 @@ jobs:
     with:
       dotnet-version: "9.0.*"
       dotnet-target: "net9.0"
+      ref: ${{ github.event.release.tag_name || inputs.tag_name }}
   upload:
     runs-on: ubuntu-latest
     permissions:
@@ -34,13 +40,26 @@ jobs:
             sha256sum ${file#./} >> ${file%.*}.sha256
           done
           ls -l
-      - name: Publish output artifacts
-        id: publish-assets
+      - name: Publish output artifacts from release event
+        if: github.event_name == 'release'
+        id: publish-assets-release
         uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
         with:
           prerelease: false
           fail_on_unmatched_files: true
           tag_name: ${{ github.event.release.tag_name }}
+          files: ./*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish output artifacts from manual dispatch
+        if: github.event_name == 'workflow_dispatch'
+        id: publish-assets-dispatch
+        uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
+        with:
+          prerelease: false
+          fail_on_unmatched_files: true
+          tag_name: ${{ inputs.tag_name }}
           files: ./*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
