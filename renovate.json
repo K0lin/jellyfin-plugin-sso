@@ -1,0 +1,45 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "dependencyDashboard": true,
+  "automerge": false,
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    {
+      "description": "Group Jellyfin host packages",
+      "matchPackageNames": ["Jellyfin.Controller", "Jellyfin.Model"],
+      "groupName": "jellyfin packages"
+    },
+    {
+      "description": "Require manual approval for major updates",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Require manual approval for security-sensitive OIDC updates",
+      "matchPackageNames": ["Duende.IdentityModel.OidcClient"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Group GitHub Actions updates",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions"
+    },
+    {
+      "description": "Group analyzer packages",
+      "matchPackageNames": [
+        "SerilogAnalyzer",
+        "StyleCop.Analyzers",
+        "SmartAnalyzers.MultithreadingAnalyzer"
+      ],
+      "groupName": "dotnet analyzers"
+    }
+  ]
+}
