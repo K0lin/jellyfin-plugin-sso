@@ -6,52 +6,56 @@ on:
       - released
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
       dotnet-version: "9.0.*"
-      dotnet-target:  "net9.0"
+      dotnet-target: "net9.0"
   upload:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs:
-    - build
+      - build
     steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
-      with:
-        name: build-artifact
-    - name: Prepare GitHub Release assets
-      run: |-
-        for file in ./*; do
-          md5sum ${file#./} >> ${file%.*}.md5
-          sha256sum ${file#./} >> ${file%.*}.sha256
-        done
-        ls -l
-    - name: Publish output artifacts
-      id: publish-assets
-      uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
-      with:
+      - name: Download Artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: build-artifact
+      - name: Prepare GitHub Release assets
+        run: |-
+          for file in ./*; do
+            md5sum ${file#./} >> ${file%.*}.md5
+            sha256sum ${file#./} >> ${file%.*}.sha256
+          done
+          ls -l
+      - name: Publish output artifacts
+        id: publish-assets
+        uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
+        with:
           prerelease: false
           fail_on_unmatched_files: true
-          tag_name:  ${{ github.event.release.tag_name }}
+          tag_name: ${{ github.event.release.tag_name }}
           files: ./*
-      env:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   generate:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs:
-    - upload
+      - upload
     steps:
-    - name: Publish Plugin Manifest
-      uses: Kevinjil/jellyfin-plugin-repo-action@a7832ecc44c6b1a45d531970f6647b8682b005b8
-      with:
-        ignorePrereleases: true
-        githubToken: ${{ secrets.GITHUB_TOKEN }}
-        repository: ${{ github.repository }}
-        pagesBranch: manifest-release
-        pagesFile: manifest.json
+      - name: Publish Plugin Manifest
+        uses: Kevinjil/jellyfin-plugin-repo-action@a7832ecc44c6b1a45d531970f6647b8682b005b8
+        with:
+          ignorePrereleases: true
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pagesBranch: manifest-release
+          pagesFile: manifest.json

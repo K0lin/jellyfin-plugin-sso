@@ -2,56 +2,59 @@ name: Publish Nightly
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 9.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build Dotnet
-      run: dotnet build --no-restore --warnaserror
-    - name: "Flag as nightly in build.yaml"
-      uses: fjogeleit/yaml-update-action@v0.10.0
-      with:
-        valueFile: 'build.yaml'
-        propertyPath: 'version'
-        value: "0.0.0.9000"
-        commitChange: false
-        updateFile: true
-    - name: "JPRM: Build"
-      id: jrpm
-      uses: oddstr13/jellyfin-plugin-repository-manager@9497a0a499416cc572ed2e07a391d9f943a37b4d # v1.1.1
-      with:
-        version: "0.0.0.9000"
-        verbosity: debug
-        path: .
-        dotnet-target: "net9.0"
-        output: _dist
-    - name: Prepare GitHub Release assets
-      run: |-
-        pushd _dist
-        for file in ./*.zip; do
-          md5sum ${file#./} >> ${file%.*}.md5
-          sha256sum ${file#./} >> ${file%.*}.sha256
-        done
-        ls -l
-        popd
-    - name: Publish output artifacts
-      id: publish-assets
-      uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
-      with:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
+        with:
+          dotnet-version: 9.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build Dotnet
+        run: dotnet build --no-restore --warnaserror
+      - name: "Flag as nightly in build.yaml"
+        uses: fjogeleit/yaml-update-action@v0.10.0
+        with:
+          valueFile: "build.yaml"
+          propertyPath: "version"
+          value: "0.0.0.9000"
+          commitChange: false
+          updateFile: true
+      - name: "JPRM: Build"
+        id: jrpm
+        uses: oddstr13/jellyfin-plugin-repository-manager@9497a0a499416cc572ed2e07a391d9f943a37b4d # v1.1.1
+        with:
+          version: "0.0.0.9000"
+          verbosity: debug
+          path: .
+          dotnet-target: "net9.0"
+          output: _dist
+      - name: Prepare GitHub Release assets
+        run: |-
+          pushd _dist
+          for file in ./*.zip; do
+            md5sum ${file#./} >> ${file%.*}.md5
+            sha256sum ${file#./} >> ${file%.*}.sha256
+          done
+          ls -l
+          popd
+      - name: Publish output artifacts
+        id: publish-assets
+        uses: softprops/action-gh-release@50195ba7f6f93d1ac97ba8332a178e008ad176aa
+        with:
           prerelease: false
           fail_on_unmatched_files: true
           tag_name: nightly
@@ -60,14 +63,13 @@ jobs:
             build.yaml
           body: |
             Nightly build
-      env:
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Publish Plugin Manifest
-      uses: Kevinjil/jellyfin-plugin-repo-action@a7832ecc44c6b1a45d531970f6647b8682b005b8
-      with:
-        ignorePrereleases: true
-        githubToken: ${{ secrets.GITHUB_TOKEN }}
-        repository: ${{ github.repository }}
-        pagesBranch: manifest-release
-        pagesFile: manifest.json
-
+      - name: Publish Plugin Manifest
+        uses: Kevinjil/jellyfin-plugin-repo-action@a7832ecc44c6b1a45d531970f6647b8682b005b8
+        with:
+          ignorePrereleases: true
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          pagesBranch: manifest-release
+          pagesFile: manifest.json
