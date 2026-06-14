@@ -6,12 +6,12 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Reflection;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Duende.IdentityModel.OidcClient;
 using Jellyfin.Data;
 using Jellyfin.Database.Implementations.Entities;
 using Jellyfin.Database.Implementations.Enums;
+using Jellyfin.Plugin.SSO_Auth.Auth;
 using Jellyfin.Plugin.SSO_Auth.Config;
 using Jellyfin.Plugin.SSO_Auth.Helpers;
 using MediaBrowser.Common.Api;
@@ -26,8 +26,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Jellyfin.Plugin.SSO_Auth.Api;
 
@@ -154,14 +152,8 @@ public class SSOController : ControllerBase
                 return ReturnError(StatusCodes.Status400BadRequest, $"Error logging in: {result.Error} - {result.ErrorDescription}");
             }
 
-            if (!config.EnableFolderRoles && config.EnabledFolders != null)
-            {
-                timedState.Folders = new List<string>(config.EnabledFolders);
-            }
-            else
-            {
-                timedState.Folders = new List<string>();
-            }
+            var defaultFolders = !config.EnableFolderRoles && config.EnabledFolders != null ? config.EnabledFolders : Array.Empty<string>();
+            timedState.Folders = new List<string>(defaultFolders);
 
             timedState.EnableLiveTv = config.EnableLiveTv;
             timedState.EnableLiveTvManagement = config.EnableLiveTvManagement;
@@ -183,133 +175,27 @@ public class SSOController : ControllerBase
                         timedState.Valid = true;
                     }
                 }
-
-                // Role processing
-                // The regex matches any "." not preceded by a "\": a.b.c will be split into a, b, and c, but a.b\.c will be split into a, b.c (after processing the escaped dots)
-                // We have to first process the RoleClaim string
-                string[] segments = string.IsNullOrEmpty(config.RoleClaim) ? Array.Empty<string>() : Regex.Split(config.RoleClaim.Trim(), "(?<!\\\\)\\.");
-
-                if (segments.Any())
-                {
-                    // Now we make sure that any escaped "."s ("\.") are replaced with "."
-                    segments = segments.Select(i => i.Replace("\\.", ".")).ToArray();
-
-                    if (claim.Type == segments[0])
-                    {
-                        List<string> roles;
-                        // If we are not using JSON values, just use the raw info from the claim value
-                        if (segments.Length == 1)
-                        {
-                            roles = new List<string> { claim.Value };
-                        }
-                        else
-                        {
-                            // We recursively traverse through the JSON data for the roles and parse it
-                            var json = JsonConvert.DeserializeObject<IDictionary<string, object>>(claim.Value);
-                            if (json is null)
-                            {
-                                roles = new List<string>();
-                            }
-                            else
-                            {
-                                bool missingSegment = false;
-                                for (int i = 1; i < segments.Length - 1; i++)
-                                {
-                                    var segment = segments[i];
-                                    if (!json.TryGetValue(segment, out var nextToken) || nextToken is not JObject nextObject)
-                                    {
-                                        missingSegment = true;
-                                        break;
-                                    }
-
-                                    json = nextObject.ToObject<IDictionary<string, object>>();
-                                    if (json is null)
-                                    {
-                                        missingSegment = true;
-                                        break;
-                                    }
-                                }
-
-                                if (missingSegment || !json.TryGetValue(segments[^1], out var rolesToken) || rolesToken is not JArray rolesArray)
-                                {
-                                    roles = new List<string>();
-                                }
-                                else
-                                {
-                                    // The final step is to take the JSON and turn it from a dictionary into a string
-                                    roles = rolesArray.ToObject<List<string>>();
-                                }
-                            }
-                        }
-
-                        foreach (string role in roles)
-                        {
-                            // Check if allowed to login based on roles
-                            if (config.Roles != null && config.Roles.Any())
-                            {
-                                foreach (string validRoles in config.Roles)
-                                {
-                                    if (role.Equals(validRoles))
-                                    {
-                                        timedState.Valid = true;
-                                    }
-                                }
-                            }
-
-                            // Check if admin based on roles
-                            if (config.AdminRoles != null && config.AdminRoles.Any())
-                            {
-                                foreach (string validAdminRoles in config.AdminRoles)
-                                {
-                                    if (role.Equals(validAdminRoles))
-                                    {
-                                        timedState.Admin = true;
-                                    }
-                                }
-                            }
-
-                            // Get allowed folders from roles
-                            if (config.EnableFolderRoles)
-                            {
-                                foreach (FolderRoleMap folderRoleMap in config.FolderRoleMapping)
-                                {
-                                    if (role.Equals(folderRoleMap.Role?.Trim()))
-                                    {
-                                        timedState.Folders.AddRange(folderRoleMap.Folders);
-                                    }
-                                }
-                            }
-
-                            if (config.EnableLiveTvRoles)
-                            {
-                                // Check if allowed Live TV based on roles
-                                if (config.LiveTvRoles != null && config.LiveTvRoles.Any())
-                                {
-                                    foreach (string validLiveTvRoles in config.LiveTvRoles)
-                                    {
-                                        if (role.Equals(validLiveTvRoles))
-                                        {
-                                            timedState.EnableLiveTv = true;
-                                        }
-                                    }
-                                }
-
-                                // Check if allowed Live TV management based on roles
-                                if (config.LiveTvManagementRoles != null && config.LiveTvManagementRoles.Any())
-                                {
-                                    foreach (string validLiveTvManagementRoles in config.LiveTvManagementRoles)
-                                    {
-                                        if (role.Equals(validLiveTvManagementRoles))
-                                        {
-                                            timedState.EnableLiveTvManagement = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
+
+            var oidcRoles = AuthorizationEvaluator.ExtractOidcRoles(result.User.Claims, config.RoleClaim);
+            var oidcAuthorization = AuthorizationEvaluator.Evaluate(
+                oidcRoles,
+                config.Roles,
+                config.AdminRoles,
+                defaultFolders,
+                config.EnableFolderRoles,
+                config.FolderRoleMapping,
+                timedState.EnableLiveTv,
+                timedState.EnableLiveTvManagement,
+                config.EnableLiveTvRoles,
+                config.LiveTvRoles,
+                config.LiveTvManagementRoles);
+
+            timedState.Valid = timedState.Valid || oidcAuthorization.IsValid;
+            timedState.Admin = oidcAuthorization.IsAdmin;
+            timedState.Folders = new List<string>(oidcAuthorization.Folders);
+            timedState.EnableLiveTv = oidcAuthorization.EnableLiveTv;
+            timedState.EnableLiveTvManagement = oidcAuthorization.EnableLiveTvManagement;
 
             // If the provider doesn't support the preferred username claim, then use the sub claim
             if (!timedState.Valid)
@@ -603,28 +489,21 @@ public class SSOController : ControllerBase
                 return Problem("Invalid SAML signature");
             }
 
-            bool valid = false;
-
-            // If no roles are configured, don't use RBAC
-            if (config.Roles == null || config.Roles.Length == 0)
-            {
-                valid = true;
-            }
-
-            // Check if user is allowed to log in based on roles
             var samlRoles = samlResponse.GetCustomAttributes("Role").ToList();
-            foreach (string role in samlRoles)
-            {
-                foreach (string allowedRole in config.Roles ?? Array.Empty<string>())
-                {
-                    if (allowedRole.Equals(role))
-                    {
-                        valid = true;
-                    }
-                }
-            }
+            var samlAuthorization = AuthorizationEvaluator.Evaluate(
+                samlRoles,
+                config.Roles,
+                config.AdminRoles,
+                Array.Empty<string>(),
+                config.EnableFolderRoles,
+                config.FolderRoleMapping,
+                config.EnableLiveTv,
+                config.EnableLiveTvManagement,
+                config.EnableLiveTvRoles,
+                config.LiveTvRoles,
+                config.LiveTvManagementRoles);
 
-            if (valid)
+            if (samlAuthorization.IsValid)
             {
                 return Content(
                         WebResponse.Generator(
@@ -758,9 +637,6 @@ public class SSOController : ControllerBase
 
         if (config.Enabled)
         {
-            bool isAdmin = false;
-            bool liveTv = config.EnableLiveTv;
-            bool liveTvManagement = config.EnableLiveTvManagement;
             var samlResponse = new Response(config.SamlCertificate, response.Data);
 
             if (!samlResponse.IsValid())
@@ -768,73 +644,25 @@ public class SSOController : ControllerBase
                 return Problem("Invalid SAML signature");
             }
 
-            List<string> folders;
-            if (!config.EnableFolderRoles && config.EnabledFolders != null)
-            {
-                folders = new List<string>(config.EnabledFolders);
-            }
-            else
-            {
-                folders = new List<string>();
-            }
+            var defaultSamlFolders = !config.EnableFolderRoles && config.EnabledFolders != null ? config.EnabledFolders : Array.Empty<string>();
 
             var samlRoles = samlResponse.GetCustomAttributes("Role").ToList();
-            foreach (string role in samlRoles)
-            {
-                if (config.AdminRoles != null)
-                {
-                    foreach (string allowedRole in config.AdminRoles)
-                    {
-                        if (allowedRole.Equals(role))
-                        {
-                            isAdmin = true;
-                        }
-                    }
-                }
-
-                if (config.EnableFolderRoles)
-                {
-                    if (config.FolderRoleMapping != null)
-                    {
-                        foreach (FolderRoleMap folderRoleMap in config.FolderRoleMapping)
-                        {
-                            if (folderRoleMap.Role.Equals(role))
-                            {
-                                folders.AddRange(folderRoleMap.Folders);
-                            }
-                        }
-                    }
-                }
-
-                if (config.EnableLiveTvRoles)
-                {
-                    if (config.LiveTvRoles != null)
-                    {
-                        foreach (string allowedLiveTvRole in config.LiveTvRoles)
-                        {
-                            if (allowedLiveTvRole.Equals(role))
-                            {
-                                liveTv = true;
-                            }
-                        }
-                    }
-
-                    if (config.LiveTvManagementRoles != null)
-                    {
-                        foreach (string allowedLiveTvManagementRole in config.LiveTvManagementRoles)
-                        {
-                            if (allowedLiveTvManagementRole.Equals(role))
-                            {
-                                liveTvManagement = true;
-                            }
-                        }
-                    }
-                }
-            }
+            var samlAuthorization = AuthorizationEvaluator.Evaluate(
+                samlRoles,
+                config.Roles,
+                config.AdminRoles,
+                defaultSamlFolders,
+                config.EnableFolderRoles,
+                config.FolderRoleMapping,
+                config.EnableLiveTv,
+                config.EnableLiveTvManagement,
+                config.EnableLiveTvRoles,
+                config.LiveTvRoles,
+                config.LiveTvManagementRoles);
 
             if (config.AdminRoles != null && config.AdminRoles.Length > 0)
             {
-                if (isAdmin)
+                if (samlAuthorization.IsAdmin)
                 {
                     _logger.LogInformation(
                         "SAML user {Username} matched one of the configured admin roles {@AdminRoles}.",
@@ -855,12 +683,12 @@ public class SSOController : ControllerBase
 
             var authenticationResult = await Authenticate(
                 userId,
-                isAdmin,
+                samlAuthorization.IsAdmin,
                 config.EnableAuthorization,
                 config.EnableAllFolders,
-                folders.ToArray(),
-                liveTv,
-                liveTvManagement,
+                samlAuthorization.Folders.ToArray(),
+                samlAuthorization.EnableLiveTv,
+                samlAuthorization.EnableLiveTvManagement,
                 response,
                 config.DefaultProvider?.Trim(),
                 null,
