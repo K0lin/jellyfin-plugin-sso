@@ -542,7 +542,7 @@ public class SSOController : ControllerBase
             {
                 if (kvp.Value.State.State.Equals(response.Data) && kvp.Value.Valid)
                 {
-                    Guid userId = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, kvp.Value.Username);
+                    Guid userId = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, kvp.Value.Username, config.EnableAuthorization);
 
                     var authenticationResult = await Authenticate(
                         userId,
@@ -851,7 +851,7 @@ public class SSOController : ControllerBase
                 }
             }
 
-            Guid userId = await CreateCanonicalLinkAndUserIfNotExist("saml", provider, samlResponse.GetNameID());
+            Guid userId = await CreateCanonicalLinkAndUserIfNotExist("saml", provider, samlResponse.GetNameID(), config.EnableAuthorization);
 
             var authenticationResult = await Authenticate(
                 userId,
@@ -918,7 +918,7 @@ public class SSOController : ControllerBase
         return links;
     }
 
-    private async Task<Guid> CreateCanonicalLinkAndUserIfNotExist(string mode, string provider, string canonicalName)
+    private async Task<Guid> CreateCanonicalLinkAndUserIfNotExist(string mode, string provider, string canonicalName, bool enableAuthorization)
     {
         User user = null;
 
@@ -947,6 +947,16 @@ public class SSOController : ControllerBase
         {
             _logger.LogInformation($"SSO user {canonicalName} doesn't exist, creating...");
             user = await _userManager.CreateUserAsync(canonicalName).ConfigureAwait(false);
+
+            if (!enableAuthorization)
+            {
+                var policy = _userManager.GetUserDto(user).Policy;
+                policy.EnableAllFolders = false;
+                policy.EnabledFolders = Array.Empty<Guid>();
+                await _userManager.UpdatePolicyAsync(user.Id, policy).ConfigureAwait(false);
+                user = _userManager.GetUserById(user.Id);
+            }
+
             user.AuthenticationProviderId = GetType().FullName;
             // https://jonathancrozier.com/blog/how-to-generate-a-cryptographically-secure-random-string-in-dot-net-with-c-sharp
             user.Password = _cryptoProvider.CreatePasswordHash(Convert.ToBase64String(RandomNumberGenerator.GetBytes(64))).ToString();
