@@ -165,17 +165,7 @@ public class SSOController : ControllerBase
                     (s, claim) => s.Contains($"@{{{claim.Type}}}") ? s.Replace($"@{{{claim.Type}}}", claim.Value) : s);
             }
 
-            foreach (var claim in result.User.Claims)
-            {
-                if (claim.Type == (config.DefaultUsernameClaim?.Trim() ?? "preferred_username"))
-                {
-                    timedState.Username = claim.Value;
-                    if (config.Roles == null || config.Roles.Length == 0)
-                    {
-                        timedState.Valid = true;
-                    }
-                }
-            }
+            timedState.Username = AuthorizationEvaluator.ResolveOidcUsername(result.User.Claims, config.DefaultUsernameClaim);
 
             var oidcRoles = AuthorizationEvaluator.ExtractOidcRoles(result.User.Claims, config.RoleClaim);
             var oidcAuthorization = AuthorizationEvaluator.Evaluate(
@@ -191,27 +181,11 @@ public class SSOController : ControllerBase
                 config.LiveTvRoles,
                 config.LiveTvManagementRoles);
 
-            timedState.Valid = timedState.Valid || oidcAuthorization.IsValid;
+            timedState.Valid = !string.IsNullOrEmpty(timedState.Username) && oidcAuthorization.IsValid;
             timedState.Admin = oidcAuthorization.IsAdmin;
             timedState.Folders = new List<string>(oidcAuthorization.Folders);
             timedState.EnableLiveTv = oidcAuthorization.EnableLiveTv;
             timedState.EnableLiveTvManagement = oidcAuthorization.EnableLiveTvManagement;
-
-            // If the provider doesn't support the preferred username claim, then use the sub claim
-            if (!timedState.Valid)
-            {
-                foreach (var claim in result.User.Claims)
-                {
-                    if (claim.Type == "sub")
-                    {
-                        timedState.Username = claim.Value;
-                        if (config.Roles == null || config.Roles.Length == 0)
-                        {
-                            timedState.Valid = true;
-                        }
-                    }
-                }
-            }
 
             bool isLinking = timedState.IsLinking;
 

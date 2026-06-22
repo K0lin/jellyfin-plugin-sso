@@ -14,6 +14,28 @@ namespace Jellyfin.Plugin.SSO_Auth.Auth;
 /// </summary>
 internal static class AuthorizationEvaluator
 {
+    private static readonly StringComparer RoleComparer = StringComparer.Ordinal;
+
+    /// <summary>
+    /// Resolves the Jellyfin username from OIDC claims.
+    /// </summary>
+    /// <param name="claims">The OIDC claims returned by the provider.</param>
+    /// <param name="defaultUsernameClaim">The preferred username claim configured for the provider.</param>
+    /// <returns>The resolved username, or null when no usable claim is present.</returns>
+    internal static string ResolveOidcUsername(IEnumerable<Claim> claims, string defaultUsernameClaim)
+    {
+        var claimList = claims?.ToList() ?? new List<Claim>();
+        string usernameClaim = string.IsNullOrWhiteSpace(defaultUsernameClaim) ? "preferred_username" : defaultUsernameClaim.Trim();
+
+        string username = claimList.FirstOrDefault(claim => claim.Type == usernameClaim)?.Value;
+        if (!string.IsNullOrEmpty(username))
+        {
+            return username;
+        }
+
+        return claimList.FirstOrDefault(claim => claim.Type == "sub")?.Value;
+    }
+
     /// <summary>
     /// Extracts OIDC roles from the configured role claim path.
     /// </summary>
@@ -78,7 +100,7 @@ internal static class AuthorizationEvaluator
         IReadOnlyCollection<string> liveTvRoles,
         IReadOnlyCollection<string> liveTvManagementRoles)
     {
-        var roleList = roles?.ToList() ?? new List<string>();
+        var roleList = roles?.Where(role => role is not null).ToList() ?? new List<string>();
         var folders = enableFolderRoles ? new List<string>() : new List<string>(defaultFolders ?? Array.Empty<string>());
         bool isValid = allowedRoles == null || allowedRoles.Count == 0;
         bool isAdmin = false;
@@ -87,12 +109,12 @@ internal static class AuthorizationEvaluator
 
         foreach (string role in roleList)
         {
-            if (allowedRoles != null && allowedRoles.Any(allowedRole => role.Equals(allowedRole)))
+            if (allowedRoles != null && allowedRoles.Any(allowedRole => RoleComparer.Equals(role, allowedRole)))
             {
                 isValid = true;
             }
 
-            if (adminRoles != null && adminRoles.Any(adminRole => role.Equals(adminRole)))
+            if (adminRoles != null && adminRoles.Any(adminRole => RoleComparer.Equals(role, adminRole)))
             {
                 isAdmin = true;
             }
@@ -101,7 +123,7 @@ internal static class AuthorizationEvaluator
             {
                 foreach (FolderRoleMap folderRoleMap in folderRoleMapping ?? Array.Empty<FolderRoleMap>())
                 {
-                    if (role.Equals(folderRoleMap.Role?.Trim()))
+                    if (RoleComparer.Equals(role, folderRoleMap.Role?.Trim()))
                     {
                         folders.AddRange(folderRoleMap.Folders ?? new List<string>());
                     }
@@ -110,12 +132,12 @@ internal static class AuthorizationEvaluator
 
             if (enableLiveTvRoles)
             {
-                if (liveTvRoles != null && liveTvRoles.Any(liveTvRole => role.Equals(liveTvRole)))
+                if (liveTvRoles != null && liveTvRoles.Any(liveTvRole => RoleComparer.Equals(role, liveTvRole)))
                 {
                     enableLiveTv = true;
                 }
 
-                if (liveTvManagementRoles != null && liveTvManagementRoles.Any(liveTvManagementRole => role.Equals(liveTvManagementRole)))
+                if (liveTvManagementRoles != null && liveTvManagementRoles.Any(liveTvManagementRole => RoleComparer.Equals(role, liveTvManagementRole)))
                 {
                     enableLiveTvManagement = true;
                 }

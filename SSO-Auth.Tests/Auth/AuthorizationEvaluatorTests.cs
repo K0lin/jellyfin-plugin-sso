@@ -8,6 +8,54 @@ namespace Jellyfin.Plugin.SSO_Auth.Tests.Auth;
 public class AuthorizationEvaluatorTests
 {
     [Fact]
+    public void ResolveOidcUsername_ReturnsPreferredUsernameByDefault()
+    {
+        var username = AuthorizationEvaluator.ResolveOidcUsername(
+            new[]
+            {
+                new Claim("preferred_username", "jellyfin-user"),
+                new Claim("sub", "subject-id")
+            },
+            null!);
+
+        Assert.Equal("jellyfin-user", username);
+    }
+
+    [Fact]
+    public void ResolveOidcUsername_ReturnsConfiguredUsernameClaim()
+    {
+        var username = AuthorizationEvaluator.ResolveOidcUsername(
+            new[]
+            {
+                new Claim("email", "user@example.invalid"),
+                new Claim("sub", "subject-id")
+            },
+            " email ");
+
+        Assert.Equal("user@example.invalid", username);
+    }
+
+    [Fact]
+    public void ResolveOidcUsername_FallsBackToSubjectWhenPreferredClaimIsMissing()
+    {
+        var username = AuthorizationEvaluator.ResolveOidcUsername(
+            new[] { new Claim("sub", "subject-id") },
+            null!);
+
+        Assert.Equal("subject-id", username);
+    }
+
+    [Fact]
+    public void ResolveOidcUsername_ReturnsNullWhenNoUsableClaimExists()
+    {
+        var username = AuthorizationEvaluator.ResolveOidcUsername(
+            new[] { new Claim("other", "value") },
+            null!);
+
+        Assert.Null(username);
+    }
+
+    [Fact]
     public void ExtractOidcRoles_ReturnsSimpleClaimValue()
     {
         var roles = AuthorizationEvaluator.ExtractOidcRoles(
@@ -109,6 +157,14 @@ public class AuthorizationEvaluatorTests
         var result = Evaluate(roles: new[] { "Users" }, allowedRoles: new[] { "users" });
 
         Assert.False(result.IsValid);
+    }
+
+    [Fact]
+    public void Evaluate_IgnoresNullProviderRoles()
+    {
+        var result = Evaluate(roles: new[] { null!, "users" }, allowedRoles: new[] { "users" });
+
+        Assert.True(result.IsValid);
     }
 
     [Fact]
