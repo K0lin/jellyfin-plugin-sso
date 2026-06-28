@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,7 @@ public class SSOController : ControllerBase
     private readonly IProviderManager _providerManager;
     private readonly IServerConfigurationManager _serverConfigurationManager;
     private readonly IHttpClientFactory _httpClientFactory;
-    private static readonly IDictionary<string, TimedAuthorizeState> StateManager = new Dictionary<string, TimedAuthorizeState>();
+    private static readonly ConcurrentDictionary<string, TimedAuthorizeState> StateManager = new ConcurrentDictionary<string, TimedAuthorizeState>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SSOController"/> class.
@@ -296,10 +297,10 @@ public class SSOController : ControllerBase
                 return ReturnError(StatusCodes.Status400BadRequest, $"Error preparing login: {state.Error} - {state.ErrorDescription}");
             }
 
-            StateManager.Add(state.State, new TimedAuthorizeState(state, DateTime.Now));
-
-            // Track whether this is a linking request or not.
-            StateManager[state.State].IsLinking = isLinking;
+            StateManager[state.State] = new TimedAuthorizeState(state, DateTime.Now)
+            {
+                IsLinking = isLinking
+            };
             return Redirect(state.StartUrl);
         }
 
@@ -400,24 +401,23 @@ public class SSOController : ControllerBase
         {
             foreach (var kvp in StateManager)
             {
-                if (kvp.Value.State.State.Equals(response.Data) && kvp.Value.Valid)
+                if (kvp.Value.State.State.Equals(response.Data) && kvp.Value.Valid && StateManager.TryRemove(kvp.Key, out var timedState))
                 {
-                    Guid userId = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, kvp.Value.Username, config.EnableAuthorization);
+                    Guid userId = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, timedState.Username, config.EnableAuthorization);
 
                     var authenticationResult = await Authenticate(
                         userId,
-                        kvp.Value.Admin,
+                        timedState.Admin,
                         config.EnableAuthorization,
                         config.EnableAllFolders,
-                        kvp.Value.Folders.ToArray(),
-                        kvp.Value.EnableLiveTv,
-                        kvp.Value.EnableLiveTvManagement,
+                        timedState.Folders.ToArray(),
+                        timedState.EnableLiveTv,
+                        timedState.EnableLiveTvManagement,
                         response,
                         config.DefaultProvider?.Trim(),
-                        kvp.Value.AvatarURL,
+                        timedState.AvatarURL,
                         config.PreserveAdminPermissions)
                         .ConfigureAwait(false);
-                    StateManager.Remove(kvp.Key);
                     return Ok(authenticationResult);
                 }
             }
@@ -1183,12 +1183,12 @@ public class SSOController : ControllerBase
 
     private void Invalidate()
     {
+        var now = DateTime.Now;
         foreach (var kvp in StateManager)
         {
-            var now = DateTime.Now;
             if (now.Subtract(kvp.Value.Created).TotalMinutes > 1)
             {
-                StateManager.Remove(kvp.Key);
+                StateManager.TryRemove(kvp.Key, out _);
             }
         }
     }
