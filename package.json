@@ -5,6 +5,6 @@
     "format:check": "prettier --check \"**/*.{js,html,md,css,scss}\""
   },
   "devDependencies": {
-    "prettier": "3.8.4"
+    "prettier": "3.9.1"
   }
 }
