@@ -238,6 +238,7 @@ const ssoConfigurationPage = {
   listArgumentsByType: (page) => {
     const json_class = ".sso-json";
     const json_string_class = ".sso-json-string";
+    const nullable_boolean_class = ".sso-nullable-boolean";
     const toggle_class = ".sso-toggle";
     const text_class = ".sso-text";
     const text_list_class = ".sso-line-list";
@@ -259,6 +260,10 @@ const ssoConfigurationPage = {
       ...oidc_form.querySelectorAll(json_string_class),
     ].map((e) => e.id);
 
+    const nullable_boolean_fields = [
+      ...oidc_form.querySelectorAll(nullable_boolean_class),
+    ].map((e) => e.id);
+
     const text_list_fields = [
       ...oidc_form.querySelectorAll(text_list_class),
     ].map((e) => e.id);
@@ -270,6 +275,7 @@ const ssoConfigurationPage = {
     const output = {
       json_fields,
       json_string_fields,
+      nullable_boolean_fields,
       text_list_fields,
       text_fields,
       check_fields,
@@ -315,6 +321,12 @@ const ssoConfigurationPage = {
           page.querySelector("#" + id).value = provider[id] || "";
         });
 
+        form_elements.nullable_boolean_fields.forEach((id) => {
+          const value = provider[id];
+          page.querySelector("#" + id).value =
+            value === true ? "true" : value === false ? "false" : "";
+        });
+
         form_elements.text_list_fields.forEach((id) => {
           if (provider[id])
             ssoConfigurationPage.fillTextList(
@@ -344,6 +356,8 @@ const ssoConfigurationPage = {
           if (provider[id])
             ssoConfigurationPage.populateRoleMappings(provider[id], elem);
         });
+
+        ssoConfigurationPage.updateContentDownloadPolicyControls(page);
       },
     );
   },
@@ -439,6 +453,11 @@ const ssoConfigurationPage = {
           current_config[id] = value;
         }
 
+        form_elements.nullable_boolean_fields.forEach((id) => {
+          const value = page.querySelector("#" + id).value;
+          current_config[id] = value === "" ? null : value === "true";
+        });
+
         form_elements.check_fields.forEach((id) => {
           current_config[id] = page.querySelector("#" + id).checked;
         });
@@ -490,6 +509,21 @@ const ssoConfigurationPage = {
     view.appendChild(style);
   },
 
+  updateContentDownloadPolicyControls: (view) => {
+    const contentDownloadPermission = view.querySelector(
+      "#EnableContentDownloading",
+    );
+    const applyOnEveryLogin = view.querySelector(
+      "#ApplyContentDownloadPermissionOnEveryLogin",
+    );
+    const isConfigured = contentDownloadPermission.value !== "";
+
+    applyOnEveryLogin.disabled = !isConfigured;
+    if (!isConfigured) {
+      applyOnEveryLogin.checked = false;
+    }
+  },
+
   bindEvents: (view) => {
     if (view.dataset.ssoConfigEventsBound === "true") {
       return;
@@ -535,6 +569,12 @@ const ssoConfigurationPage = {
       e.preventDefault();
       return false;
     });
+
+    view
+      .querySelector("#EnableContentDownloading")
+      .addEventListener("change", () =>
+        ssoConfigurationPage.updateContentDownloadPolicyControls(view),
+      );
   },
 };
 

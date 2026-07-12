@@ -70,6 +70,16 @@ public class SamlConfig
     public bool EnableAllFolders { get; set; }
 
     /// <summary>
+    /// Gets or sets whether users can download content, or null to leave the existing permission unchanged.
+    /// </summary>
+    public bool? EnableContentDownloading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the content download permission is applied on every SSO login.
+    /// </summary>
+    public bool ApplyContentDownloadPermissionOnEveryLogin { get; set; }
+
+    /// <summary>
     /// Gets or sets what folders should users have access to by default.
     /// </summary>
     public string[] EnabledFolders { get; set; }
@@ -202,6 +212,16 @@ public class OidConfig
     /// Gets or sets a value indicating whether all folders are allowed by default.
     /// </summary>
     public bool EnableAllFolders { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether users can download content, or null to leave the existing permission unchanged.
+    /// </summary>
+    public bool? EnableContentDownloading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the content download permission is applied on every SSO login.
+    /// </summary>
+    public bool ApplyContentDownloadPermissionOnEveryLogin { get; set; }
 
     /// <summary>
     /// Gets or sets what folders should users have access to by default.
