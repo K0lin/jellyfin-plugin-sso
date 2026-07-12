@@ -8,6 +8,7 @@ using System.Net.Mime;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
 using Jellyfin.Data;
 using Jellyfin.Database.Implementations.Entities;
@@ -289,7 +290,18 @@ public class SSOController : ControllerBase
             options.Policy.Discovery.RequireHttps = !config.DisableHttps;
             options.Policy.Discovery.ValidateIssuerName = !config.DoNotValidateIssuerName;
             var oidcClient = new OidcClient(options);
-            var state = await oidcClient.PrepareLoginAsync().ConfigureAwait(false);
+            Parameters authorizationParameters;
+            try
+            {
+                authorizationParameters = OidcAuthorizationParameterBuilder.Build(config.OidAuthorizationParameters);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning("OIDC provider {Provider} has invalid authorization parameter configuration: {Message}", provider, ex.Message);
+                return ReturnError(StatusCodes.Status400BadRequest, "Invalid OIDC authorization parameter configuration.");
+            }
+
+            var state = await oidcClient.PrepareLoginAsync(authorizationParameters).ConfigureAwait(false);
 
             if (state.IsError)
             {

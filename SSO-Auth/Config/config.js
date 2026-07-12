@@ -237,6 +237,7 @@ const ssoConfigurationPage = {
   },
   listArgumentsByType: (page) => {
     const json_class = ".sso-json";
+    const json_string_class = ".sso-json-string";
     const toggle_class = ".sso-toggle";
     const text_class = ".sso-text";
     const text_list_class = ".sso-line-list";
@@ -254,6 +255,10 @@ const ssoConfigurationPage = {
       (e) => e.id,
     );
 
+    const json_string_fields = [
+      ...oidc_form.querySelectorAll(json_string_class),
+    ].map((e) => e.id);
+
     const text_list_fields = [
       ...oidc_form.querySelectorAll(text_list_class),
     ].map((e) => e.id);
@@ -264,6 +269,7 @@ const ssoConfigurationPage = {
 
     const output = {
       json_fields,
+      json_string_fields,
       text_list_fields,
       text_fields,
       check_fields,
@@ -303,6 +309,10 @@ const ssoConfigurationPage = {
         form_elements.json_fields.forEach((id) => {
           if (provider[id])
             page.querySelector("#" + id).value = JSON.stringify(provider[id]);
+        });
+
+        form_elements.json_string_fields.forEach((id) => {
+          page.querySelector("#" + id).value = provider[id] || "";
         });
 
         form_elements.text_list_fields.forEach((id) => {
@@ -398,6 +408,36 @@ const ssoConfigurationPage = {
             current_config[id] = null;
           }
         });
+
+        for (const id of form_elements.json_string_fields) {
+          const value = page.querySelector("#" + id).value.trim();
+          if (!value) {
+            current_config[id] = null;
+            continue;
+          }
+
+          try {
+            const parsed = JSON.parse(value);
+            if (
+              !parsed ||
+              Array.isArray(parsed) ||
+              typeof parsed !== "object"
+            ) {
+              throw new Error(
+                "Authorization parameters must be a JSON object.",
+              );
+            }
+          } catch (error) {
+            Dashboard.alert(
+              error.message ||
+                ssoI18n.t("config.messages.InvalidAuthorizationParameters"),
+            );
+            resolve();
+            return;
+          }
+
+          current_config[id] = value;
+        }
 
         form_elements.check_fields.forEach((id) => {
           current_config[id] = page.querySelector("#" + id).checked;

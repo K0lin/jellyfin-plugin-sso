@@ -265,6 +265,33 @@
                 <div class="inputContainer">
                   <label
                     class="inputLabel inputLabelUnfocused"
+                    for="OidAuthorizationParameters"
+                    data-i18n="config.fields.OidAuthorizationParametersLabel"
+                    >Additional OIDC Authorization Parameters (JSON):</label
+                  >
+                  <textarea
+                    is="emby-textarea"
+                    id="OidAuthorizationParameters"
+                    type="text"
+                    class="sso-json-string emby-textarea"
+                  ></textarea>
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.OidAuthorizationParametersDescription"
+                  >
+                    Provider-specific parameters sent to the OIDC authorization
+                    endpoint as a JSON object. Security parameters such as
+                    state, nonce, redirect_uri, scope, and PKCE fields cannot be
+                    overridden. For Twitch claims, use
+                    <code
+                      >{"claims":{"id_token":{"preferred_username":null}}}</code
+                    >.
+                  </div>
+                </div>
+
+                <div class="inputContainer">
+                  <label
+                    class="inputLabel inputLabelUnfocused"
                     for="OidClientId"
                     data-i18n="config.fields.ClientIdLabel"
                     >OpenID Client ID:</label

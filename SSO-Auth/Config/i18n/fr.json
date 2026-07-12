@@ -94,6 +94,8 @@
       "OverrideDefaultScopesDescription": "Utilisez les scopes configurés au lieu du scope profile par défaut. Le scope openid requis est toujours inclus.",
       "OidScopesLabel": "Scopes OIDC :",
       "OidScopesDescription": "Scopes à demander, un par ligne. Par défaut, ils sont ajoutés à openid et profile. Lors du remplacement des scopes par défaut, openid est toujours inclus.",
+      "OidAuthorizationParametersLabel": "Paramètres d'autorisation OIDC supplémentaires (JSON) :",
+      "OidAuthorizationParametersDescription": "Paramètres spécifiques au fournisseur envoyés au point de terminaison d'autorisation OIDC sous forme d'objet JSON. Les paramètres de sécurité tels que state, nonce, redirect_uri, scope et les champs PKCE ne peuvent pas être remplacés.",
       "DefaultProviderLabel": "Définir le fournisseur par défaut :",
       "DefaultProviderDescription": "Fournisseur d'authentification attribué après la connexion SSO. Laissez vide pour conserver le fournisseur existant. Une valeur courante est Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider.",
       "DefaultUsernameClaimLabel": "Définir le claim de nom d'utilisateur par défaut :",
@@ -114,6 +116,7 @@
     },
     "messages": {
       "DeleteProviderConfirm": "Êtes-vous sûr de vouloir supprimer le fournisseur {0} ?",
+      "InvalidAuthorizationParameters": "Les paramètres d'autorisation doivent être un objet JSON valide.",
       "ProviderRemoved": "Fournisseur supprimé",
       "SettingsSaved": "Paramètres enregistrés."
     }

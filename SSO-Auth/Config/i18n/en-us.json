@@ -94,6 +94,8 @@
       "OverrideDefaultScopesDescription": "Use the configured scopes instead of the default profile scope. The required openid scope is always included.",
       "OidScopesLabel": "OIDC Scopes:",
       "OidScopesDescription": "Scopes to request, one per line. By default, these are added to openid and profile. When overriding default scopes, openid is still always included.",
+      "OidAuthorizationParametersLabel": "Additional OIDC Authorization Parameters (JSON):",
+      "OidAuthorizationParametersDescription": "Provider-specific parameters sent to the OIDC authorization endpoint as a JSON object. Security parameters such as state, nonce, redirect_uri, scope, and PKCE fields cannot be overridden.",
       "DefaultProviderLabel": "Set default Provider:",
       "DefaultProviderDescription": "Authentication provider assigned after SSO login. Leave blank to keep the existing provider. A common default is Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider.",
       "DefaultUsernameClaimLabel": "Set default username claim:",
@@ -114,6 +116,7 @@
     },
     "messages": {
       "DeleteProviderConfirm": "Are you sure you want to delete the provider {0}?",
+      "InvalidAuthorizationParameters": "Authorization parameters must be a valid JSON object.",
       "ProviderRemoved": "Provider removed",
       "SettingsSaved": "Settings saved."
     }

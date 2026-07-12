@@ -276,6 +276,11 @@ public class OidConfig
     public bool OverrideDefaultScopes { get; set; }
 
     /// <summary>
+    /// Gets or sets provider-specific authorization parameters as a JSON object.
+    /// </summary>
+    public string OidAuthorizationParameters { get; set; }
+
+    /// <summary>
     /// Gets or sets the default provider the user after logging in with SSO.
     /// </summary>
     public string DefaultProvider { get; set; }
