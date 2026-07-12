@@ -414,10 +414,10 @@ public class SSOController : ControllerBase
             {
                 if (kvp.Value.State.State.Equals(response.Data) && kvp.Value.Valid && StateManager.TryRemove(kvp.Key, out var timedState))
                 {
-                    Guid userId = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, timedState.Username, config.EnableAuthorization);
+                    var provisionedUser = await CreateCanonicalLinkAndUserIfNotExist("oid", provider, timedState.Username, config.EnableAuthorization);
 
                     var authenticationResult = await Authenticate(
-                        userId,
+                        provisionedUser.UserId,
                         timedState.Admin,
                         config.EnableAuthorization,
                         config.EnableAllFolders,
@@ -427,7 +427,10 @@ public class SSOController : ControllerBase
                         response,
                         config.DefaultProvider?.Trim(),
                         timedState.AvatarURL,
-                        config.PreserveAdminPermissions)
+                        config.PreserveAdminPermissions,
+                        config.EnableContentDownloading,
+                        config.ApplyContentDownloadPermissionOnEveryLogin,
+                        provisionedUser.IsNewUser)
                         .ConfigureAwait(false);
                     return Ok(authenticationResult);
                 }
@@ -664,10 +667,10 @@ public class SSOController : ControllerBase
                 }
             }
 
-            Guid userId = await CreateCanonicalLinkAndUserIfNotExist("saml", provider, samlResponse.GetNameID(), config.EnableAuthorization);
+            var provisionedUser = await CreateCanonicalLinkAndUserIfNotExist("saml", provider, samlResponse.GetNameID(), config.EnableAuthorization);
 
             var authenticationResult = await Authenticate(
-                userId,
+                provisionedUser.UserId,
                 samlAuthorization.IsAdmin,
                 config.EnableAuthorization,
                 config.EnableAllFolders,
@@ -677,7 +680,10 @@ public class SSOController : ControllerBase
                 response,
                 config.DefaultProvider?.Trim(),
                 null,
-                config.PreserveAdminPermissions)
+                config.PreserveAdminPermissions,
+                config.EnableContentDownloading,
+                config.ApplyContentDownloadPermissionOnEveryLogin,
+                provisionedUser.IsNewUser)
                 .ConfigureAwait(false);
             return Ok(authenticationResult);
         }
@@ -731,9 +737,10 @@ public class SSOController : ControllerBase
         return links;
     }
 
-    private async Task<Guid> CreateCanonicalLinkAndUserIfNotExist(string mode, string provider, string canonicalName, bool enableAuthorization)
+    private async Task<(Guid UserId, bool IsNewUser)> CreateCanonicalLinkAndUserIfNotExist(string mode, string provider, string canonicalName, bool enableAuthorization)
     {
         User user = null;
+        bool isNewUser = false;
 
         // First try to get the user by its id in case it was already registered before
         Guid userId = Guid.Empty;
@@ -758,6 +765,7 @@ public class SSOController : ControllerBase
 
         if (user == null)
         {
+            isNewUser = true;
             _logger.LogInformation($"SSO user {canonicalName} doesn't exist, creating...");
             user = await _userManager.CreateUserAsync(canonicalName).ConfigureAwait(false);
 
@@ -798,7 +806,7 @@ public class SSOController : ControllerBase
             CreateCanonicalLink(mode, provider, userId, canonicalName);
         }
 
-        return userId;
+        return (userId, isNewUser);
     }
 
     private Guid GetCanonicalLink(string mode, string provider, string canonicalName)
@@ -1055,7 +1063,10 @@ public class SSOController : ControllerBase
     /// <param name="defaultProvider">The default provider of the user to be set after logging in.</param>
     /// <param name="avatarUrl">The new avatar url for the user.</param>
     /// <param name="preserveAdmin">When true, existing administrator permissions are never revoked because the current login did not match an admin role.</param>
-    private async Task<AuthenticationResult> Authenticate(Guid userId, bool isAdmin, bool enableAuthorization, bool enableAllFolders, string[] enabledFolders, bool enableLiveTv, bool enableLiveTvAdmin, AuthResponse authResponse, string defaultProvider, string avatarUrl, bool preserveAdmin)
+    /// <param name="enableContentDownloading">The configured content download permission, or null to leave it unchanged.</param>
+    /// <param name="applyContentDownloadPermissionOnEveryLogin">Whether to apply the content download permission to existing users on login.</param>
+    /// <param name="isNewUser">Whether the user was created during the current SSO flow.</param>
+    private async Task<AuthenticationResult> Authenticate(Guid userId, bool isAdmin, bool enableAuthorization, bool enableAllFolders, string[] enabledFolders, bool enableLiveTv, bool enableLiveTvAdmin, AuthResponse authResponse, string defaultProvider, string avatarUrl, bool preserveAdmin, bool? enableContentDownloading, bool applyContentDownloadPermissionOnEveryLogin, bool isNewUser)
     {
         User user = _userManager.GetUserById(userId);
 
@@ -1112,6 +1123,15 @@ public class SSOController : ControllerBase
                 }
 
                 policy.EnabledFolders = folderIds.ToArray();
+            }
+
+            var contentDownloadPermission = ContentDownloadPolicy.Resolve(
+                enableContentDownloading,
+                isNewUser,
+                applyContentDownloadPermissionOnEveryLogin);
+            if (contentDownloadPermission.HasValue)
+            {
+                policy.EnableContentDownloading = contentDownloadPermission.Value;
             }
         }
 

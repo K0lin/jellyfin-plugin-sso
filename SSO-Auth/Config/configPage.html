@@ -364,6 +364,80 @@
                   </label>
                 </div>
 
+                <div class="selectContainer">
+                  <label
+                    class="selectLabel"
+                    for="EnableContentDownloading"
+                    data-i18n="config.fields.EnableContentDownloadingLabel"
+                    >Content Download Permission</label
+                  >
+                  <select
+                    is="emby-select"
+                    id="EnableContentDownloading"
+                    name="EnableContentDownloading"
+                    class="emby-select-withcolor emby-select sso-nullable-boolean"
+                  >
+                    <option
+                      value=""
+                      data-i18n="config.fields.EnableContentDownloadingUnchanged"
+                    >
+                      Leave unchanged
+                    </option>
+                    <option
+                      value="true"
+                      data-i18n="config.fields.EnableContentDownloadingAllowed"
+                    >
+                      Allow content downloads
+                    </option>
+                    <option
+                      value="false"
+                      data-i18n="config.fields.EnableContentDownloadingDisabled"
+                    >
+                      Disable content downloads
+                    </option>
+                  </select>
+                  <div class="selectArrowContainer">
+                    <div style="visibility: hidden; display: none">0</div>
+                    <span
+                      class="selectArrow material-icons keyboard_arrow_down"
+                      aria-hidden="true"
+                    ></span>
+                  </div>
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.EnableContentDownloadingDescription"
+                  >
+                    Controls whether users can download media. Leave unchanged
+                    to preserve the current Jellyfin permission.
+                  </div>
+                </div>
+
+                <div
+                  class="checkboxContainer checkboxContainer-withDescription"
+                >
+                  <label>
+                    <input
+                      is="emby-checkbox"
+                      id="ApplyContentDownloadPermissionOnEveryLogin"
+                      name="ApplyContentDownloadPermissionOnEveryLogin"
+                      type="checkbox"
+                      class="sso-toggle"
+                      disabled
+                    />
+                    <span
+                      data-i18n="config.fields.ApplyContentDownloadPermissionOnEveryLoginLabel"
+                      >Apply content download permission on every login</span
+                    >
+                  </label>
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.ApplyContentDownloadPermissionOnEveryLoginDescription"
+                  >
+                    When disabled, the selected permission applies only when a
+                    user is created through this provider.
+                  </div>
+                </div>
+
                 <div
                   class="checkboxContainer checkboxContainer-withDescription"
                 >
