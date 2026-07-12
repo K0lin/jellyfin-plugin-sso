@@ -77,6 +77,11 @@ public class SSOPlugin : BasePlugin<PluginConfiguration>, IPlugin, IHasWebPages
                 Name = Name + "-i18n-en-us.json",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.en-us.json"
             },
+            new PluginPageInfo
+            {
+                Name = Name + "-i18n-fr.json",
+                EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.fr.json"
+            },
         };
     }
 
@@ -107,6 +112,11 @@ public class SSOPlugin : BasePlugin<PluginConfiguration>, IPlugin, IHasWebPages
             {
                 Name = "i18n/en-us.json",
                 EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.en-us.json"
+            },
+            new PluginPageInfo
+            {
+                Name = "i18n/fr.json",
+                EmbeddedResourcePath = $"{GetType().Namespace}.Config.i18n.fr.json"
             },
             new PluginPageInfo
             {

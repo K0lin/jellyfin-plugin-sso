@@ -4,7 +4,7 @@ const normalizeLocale = (locale) =>
 const ssoI18n = {
   locale: "en-us",
   strings: {},
-  supportedLocales: ["en-us"],
+  supportedLocales: ["en-us", "fr"],
 
   detectLocale() {
     const browserLocales = navigator.languages?.length
