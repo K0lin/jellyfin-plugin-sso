@@ -18,4 +18,11 @@
     <ProjectReference Include="..\SSO-Auth\SSO-Auth.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\SSO-Auth\Config\i18n\*.json">
+      <Link>i18n\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
