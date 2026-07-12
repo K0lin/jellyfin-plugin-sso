@@ -266,9 +266,19 @@ public class OidConfig
     public string RoleClaim { get; set; }
 
     /// <summary>
-    /// Gets or Sets additional Scopes to request access to in the authorization request.
+    /// Gets or sets the scopes to request in the authorization request.
     /// </summary>
     public string[] OidScopes { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether configured scopes replace the default profile scope.
+    /// </summary>
+    public bool OverrideDefaultScopes { get; set; }
+
+    /// <summary>
+    /// Gets or sets provider-specific authorization parameters as a JSON object.
+    /// </summary>
+    public string OidAuthorizationParameters { get; set; }
 
     /// <summary>
     /// Gets or sets the default provider the user after logging in with SSO.
