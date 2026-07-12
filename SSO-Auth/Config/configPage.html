@@ -749,12 +749,36 @@
                   </div>
                 </div>
 
+                <div
+                  class="checkboxContainer checkboxContainer-withDescription"
+                >
+                  <label>
+                    <input
+                      is="emby-checkbox"
+                      id="OverrideDefaultScopes"
+                      name="OverrideDefaultScopes"
+                      type="checkbox"
+                      class="sso-toggle"
+                    />
+                    <span data-i18n="config.fields.OverrideDefaultScopesLabel"
+                      >Override default OIDC scopes</span
+                    >
+                  </label>
+                  <div
+                    class="fieldDescription checkboxFieldDescription"
+                    data-i18n="config.fields.OverrideDefaultScopesDescription"
+                  >
+                    Use the configured scopes instead of the default profile
+                    scope. The required openid scope is always included.
+                  </div>
+                </div>
+
                 <div class="inputContainer">
                   <label
                     class="inputLabel inputLabelUnfocused"
                     for="OidScopes"
                     data-i18n="config.fields.OidScopesLabel"
-                    >Request Additional Scopes:</label
+                    >OIDC Scopes:</label
                   >
                   <textarea
                     is="emby-textarea"
@@ -767,7 +791,7 @@
                     class="fieldDescription"
                     data-i18n="config.fields.OidScopesDescription"
                   >
-                    Specify additional scopes to include in the OIDC request.
+                    Specify scopes to include in the OIDC request.
                     <br />
                     One scope per line, each line should contain a scope name to
                     include in the OIDC request.
@@ -781,7 +805,8 @@
                     >), additional scopes may be required in order to validate
                     group membership in role claim.
                     <br />
-                    Leave blank to only request the default scopes.
+                    By default, these are added to openid and profile. When
+                    overriding default scopes, openid is still always included.
                   </div>
                 </div>
 

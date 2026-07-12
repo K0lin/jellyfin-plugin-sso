@@ -118,14 +118,13 @@ public class SSOController : ControllerBase
                 return BadRequest("Invalid or expired state");
             }
 
-            var scopes = config.OidScopes == null ? new string[2] : config.OidScopes;
             var options = new OidcClientOptions
             {
                 Authority = config.OidEndpoint?.Trim(),
                 ClientId = config.OidClientId?.Trim(),
                 ClientSecret = config.OidSecret?.Trim(),
                 RedirectUri = GetRequestBase(config.SchemeOverride, config.PortOverride) + $"/sso/OID/{(Request.Path.Value.Contains("/start/", StringComparison.InvariantCultureIgnoreCase) ? "redirect" : "r")}/" + provider,
-                Scope = string.Join(" ", scopes.Prepend("openid profile")),
+                Scope = OidcScopeBuilder.Build(config.OidScopes, config.OverrideDefaultScopes),
                 DisablePushedAuthorization = config.DisablePushedAuthorization,
                 LoggerFactory = _loggerFactory,
                 LoadProfile = !config.DoNotLoadProfile,
@@ -269,7 +268,7 @@ public class SSOController : ControllerBase
                 ClientId = config.OidClientId?.Trim(),
                 ClientSecret = config.OidSecret?.Trim(),
                 RedirectUri = redirectUri,
-                Scope = string.Join(" ", config.OidScopes.Prepend("openid profile")),
+                Scope = OidcScopeBuilder.Build(config.OidScopes, config.OverrideDefaultScopes),
                 DisablePushedAuthorization = config.DisablePushedAuthorization,
                 LoggerFactory = _loggerFactory,
                 LoadProfile = !config.DoNotLoadProfile,
