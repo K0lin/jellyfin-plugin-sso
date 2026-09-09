@@ -32,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SSO-Auth.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Duende.IdentityModel.OidcClient" Version="7.1.0" />
     <PackageReference Include="Jellyfin.Controller" Version="12.0.0">

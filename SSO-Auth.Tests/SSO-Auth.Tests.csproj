@@ -10,8 +10,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="all" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+
+  <!-- The plugin excludes the Jellyfin runtime assets (the server provides them); a test host has no server. -->
+  <ItemGroup>
+    <PackageReference Include="Jellyfin.Common" Version="12.0.0" />
+    <PackageReference Include="Jellyfin.Controller" Version="12.0.0" />
+    <PackageReference Include="Jellyfin.Data" Version="12.0.0" />
+    <PackageReference Include="Jellyfin.Database.Implementations" Version="12.0.0" />
+    <PackageReference Include="Jellyfin.Model" Version="12.0.0" />
   </ItemGroup>
 
   <ItemGroup>
