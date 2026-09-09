@@ -39,14 +39,41 @@ jobs:
         with:
           dotnet-target: "${{ inputs.dotnet-target }}"
 
-      - name: Use 3-segment version in artifact filename
+      - name: Normalize artifact version (3-segment)
         id: artifact
         shell: bash
+        env:
+          ARTIFACT: ${{ steps.jprm.outputs.artifact }}
         run: |
-          ARTIFACT='${{ steps.jprm.outputs.artifact }}'
-          # JPRM always normalizes the version to 4 segments (x.y.z.w).
-          # Strip a trailing ".0" revision so release assets match the
-          # 3-segment versioning (e.g. sso-authentication_5.1.0.zip).
+          VERSION="$(grep -m1 '^version:' build.yaml | cut -d'"' -f2)"
+          if [ -z "${VERSION}" ]; then
+            echo "Unable to parse version from build.yaml" >&2
+            exit 1
+          fi
+          export ARTIFACT VERSION
+          # JPRM always normalizes the version to 4 segments (x.y.z.w) when it
+          # writes meta.json and the artifact filename. Jellyfin 12 compares the
+          # packaged meta.json version against the repository manifest version
+          # (which comes from build.yaml) and logs a warning on mismatch, so
+          # rewrite meta.json with the 3-segment version from build.yaml.
+          python3 - <<'PY'
+          import json, os, zipfile
+          artifact = os.environ['ARTIFACT']
+          version = os.environ['VERSION']
+          tmp = artifact + '.tmp'
+          with zipfile.ZipFile(artifact) as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+              for item in zin.infolist():
+                  data = zin.read(item.filename)
+                  if item.filename == 'meta.json':
+                      meta = json.loads(data)
+                      meta['version'] = version
+                      data = (json.dumps(meta, indent=4) + '\n').encode('utf-8')
+                  zout.writestr(item, data)
+          os.replace(tmp, artifact)
+          print(f"Set meta.json version to {version} in {artifact}")
+          PY
+          # Strip a trailing ".0" revision from the artifact filename so release
+          # assets match the 3-segment versioning (e.g. sso-authentication_5.1.1.zip).
           NEW_ARTIFACT="${ARTIFACT}"
           if [[ "${ARTIFACT}" == *".0.zip" ]]; then
             NEW_ARTIFACT="${ARTIFACT%.0.zip}.zip"
