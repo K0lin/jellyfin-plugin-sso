@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
@@ -769,6 +768,12 @@ public class SSOController : ControllerBase
             _logger.LogInformation($"SSO user {canonicalName} doesn't exist, creating...");
             user = await _userManager.CreateUserAsync(canonicalName).ConfigureAwait(false);
 
+            // Route the account at this controller and seal it before anything else touches it: an
+            // account with no stored password accepts the empty one on the ordinary login form. If
+            // the write fails the account is deleted again, so the login fails closed.
+            user.AuthenticationProviderId = GetType().FullName;
+            await PasswordlessAccountSealer.SealNewAccountAsync(user, _userManager, _cryptoProvider, _logger);
+
             if (!enableAuthorization)
             {
                 var policy = _userManager.GetUserDto(user).Policy;
@@ -777,11 +782,6 @@ public class SSOController : ControllerBase
                 await _userManager.UpdatePolicyAsync(user.Id, policy).ConfigureAwait(false);
                 user = _userManager.GetUserById(user.Id);
             }
-
-            user.AuthenticationProviderId = GetType().FullName;
-            // https://jonathancrozier.com/blog/how-to-generate-a-cryptographically-secure-random-string-in-dot-net-with-c-sharp
-            user.Password = _cryptoProvider.CreatePasswordHash(Convert.ToBase64String(RandomNumberGenerator.GetBytes(64))).ToString();
-            await _userManager.UpdateUserAsync(user).ConfigureAwait(false);
 
             // Make sure there aren't any trailing existing links
             var links = GetCanonicalLinks(mode, provider);
@@ -1148,6 +1148,13 @@ public class SSOController : ControllerBase
 
         // UpdatePolicyAsync refreshes the cached user entity; use the current instance below.
         user = _userManager.GetUserById(userId);
+
+        // A linked account may hold no stored password (adopted by name, or provisioned by a version
+        // that never persisted one); seal it at this login instead of waiting for the next start-up sweep.
+        if (await PasswordlessAccountSealer.SealAsync(user, _userManager, _cryptoProvider).ConfigureAwait(false))
+        {
+            SsoAudit.PasswordlessAccountSealedAtLogin(_logger);
+        }
 
         if (avatarUrl is not null)
         {

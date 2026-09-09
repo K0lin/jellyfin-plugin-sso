@@ -63,6 +63,22 @@ This is 100% alpha software! PRs are welcome to improve the code.
 
 This is my first time writing C# so please take all of the code written here with a grain of salt. This program should be reasonably secure since it validates all information passed from the client with either a certificate or a secret internal state.
 
+### Password-less SSO accounts
+
+Jellyfin accepts the **empty password** on the ordinary login form for any account that has no stored password, so an account this plugin manages would be reachable without the identity provider until something writes one. The plugin closes that door in three places:
+
+- **At provisioning**: every account created by an SSO login is routed at the plugin and given a random, unguessable password (64 bytes from the OS CSPRNG, hashed through Jellyfin's own crypto provider) before anything else touches it. If that write fails, the half-created account is removed again, so a failed login cannot leave a password-less account behind. Nothing is meant to know or display that password; its only job is to keep the manual login form closed.
+- **At login**: the same seal runs during an SSO login, before the session is created, so an account that only became SSO-linked at this login — an existing local account signed in by name — is closed immediately rather than at the next restart.
+- **At start-up**: a one-shot pass walks every canonical link in every provider (OID and SAML), finds linked accounts that still hold no stored password — accounts provisioned by plugin versions that never persisted one, or existing accounts an SSO identity was linked to by name or through the self-service linking page — and seals each with the same kind of unguessable password. The pass never changes login routing, never overwrites a password that is already set, and is idempotent, so it runs on every boot and does nothing once every linked account holds a password.
+
+If the start-up pass seals anything, Jellyfin's log carries one line you can filter for:
+
+```text
+[SSO Audit] Sealed 1 SSO-linked account(s) that had no stored password: ...
+```
+
+The line reports only a count, never which accounts, because those accounts were by definition reachable by anybody on the network. The login-time seal logs a similar line, also without an account name. If a sealed account's owner was signing in by leaving the password box empty, that stops working: they should sign in through the identity provider, or an administrator can set them a real password.
+
 ## Installing
 
 Add the package repo [https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json](https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/manifest-release/manifest.json) to your Jellyfin plugin repositories.
