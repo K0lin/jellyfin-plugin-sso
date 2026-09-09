@@ -39,10 +39,25 @@ jobs:
         with:
           dotnet-target: "${{ inputs.dotnet-target }}"
 
+      - name: Use 3-segment version in artifact filename
+        id: artifact
+        shell: bash
+        run: |
+          ARTIFACT='${{ steps.jprm.outputs.artifact }}'
+          # JPRM always normalizes the version to 4 segments (x.y.z.w).
+          # Strip a trailing ".0" revision so release assets match the
+          # 3-segment versioning (e.g. sso-authentication_5.1.0.zip).
+          NEW_ARTIFACT="${ARTIFACT}"
+          if [[ "${ARTIFACT}" == *".0.zip" ]]; then
+            NEW_ARTIFACT="${ARTIFACT%.0.zip}.zip"
+            mv "${ARTIFACT}" "${NEW_ARTIFACT}"
+          fi
+          echo "artifact=${NEW_ARTIFACT}" >> "${GITHUB_OUTPUT}"
+
       - name: Upload Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-artifact
           retention-days: 30
           if-no-files-found: error
-          path: ${{ steps.jprm.outputs.artifact }}
+          path: ${{ steps.artifact.outputs.artifact }}
