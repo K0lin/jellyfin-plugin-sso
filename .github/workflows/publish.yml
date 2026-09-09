@@ -19,8 +19,8 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      dotnet-version: "9.0.*"
-      dotnet-target: "net9.0"
+      dotnet-version: "10.0.*"
+      dotnet-target: "net10.0"
       ref: ${{ github.event.release.tag_name || inputs.tag_name }}
   upload:
     runs-on: ubuntu-latest
