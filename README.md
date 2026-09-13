@@ -89,13 +89,11 @@ The nightly build may have new features unavailable in other builds, but **be wa
 - [x] Use canonical usernames instead of preferred usernames
 - [x] Add user self-service
 
-
 ## Limitations
 
 Logging in with an SSO account that has the same username as an existing Jellyfin account will override the permissions for the user. Use caution when overriding the administrator account!
 
 By default, administrator status is managed strictly from SSO admin roles when `enableAuthorization` is enabled. If an existing administrator does not match an admin role during login, the plugin can revoke the administrator flag. Set `preserveAdminPermissions` to `true` to prevent SSO logins from demoting existing administrators. Other managed permissions, such as folder access and Live TV access, are still updated on every login when `enableAuthorization` is enabled and are persisted through Jellyfin's user policy path.
-
 
 There is also no logout callback. Logging out of Jellyfin will log you out of Jellyfin only, instead of the SSO provider as well.
 
@@ -140,7 +138,7 @@ so that it refers to your fork.
 
 ## Credits and Thanks
 
-A huge thank you to [tradicije](https://github.com/tradicije) for designing the branding plugin.   
+A huge thank you to [tradicije](https://github.com/tradicije) for designing the branding plugin.
 
 Much thanks to the [Jellyfin LDAP plugin](https://github.com/jellyfin/jellyfin-plugin-ldapauth) for offering a base for me to start on my plugin.
 
