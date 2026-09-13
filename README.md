@@ -36,8 +36,6 @@ Existing users may link new SSO accounts, or remove existing links using self-se
 
 This is 100% alpha software! PRs are welcome to improve the code.
 
-~~There is NO admin configuration! You must use the API to configure the program!~~ Added by [strazto](https://github.com/strazto) in PR [#18](https://github.com/9p4/jellyfin-plugin-sso/pull/18) and [#27](https://github.com/9p4/jellyfin-plugin-sso/pull/27).
-
 **This version (>= 5.1) requires Jellyfin >= 12.0 and only works on the Web UI or clients supporting [Quick Connect](https://jellyfin.org/docs/general/server/quick-connect). For Jellyfin 10.8 - 10.11, use plugin version 5.0.x.**
 
 **This README reflects the branch it is currently on! Switch tags to view version-specific documentation!**
@@ -58,26 +56,6 @@ This is 100% alpha software! PRs are welcome to improve the code.
 
 - [OpenID](https://openid.net/developers/how-connect-works/)
 - [SAML](https://www.cloudflare.com/learning/access-management/what-is-saml/)
-
-## Security
-
-This is my first time writing C# so please take all of the code written here with a grain of salt. This program should be reasonably secure since it validates all information passed from the client with either a certificate or a secret internal state.
-
-### Password-less SSO accounts
-
-Jellyfin accepts the **empty password** on the ordinary login form for any account that has no stored password, so an account this plugin manages would be reachable without the identity provider until something writes one. The plugin closes that door in three places:
-
-- **At provisioning**: every account created by an SSO login is routed at the plugin and given a random, unguessable password (64 bytes from the OS CSPRNG, hashed through Jellyfin's own crypto provider) before anything else touches it. If that write fails, the half-created account is removed again, so a failed login cannot leave a password-less account behind. Nothing is meant to know or display that password; its only job is to keep the manual login form closed.
-- **At login**: the same seal runs during an SSO login, before the session is created, so an account that only became SSO-linked at this login — an existing local account signed in by name — is closed immediately rather than at the next restart.
-- **At start-up**: a one-shot pass walks every canonical link in every provider (OID and SAML), finds linked accounts that still hold no stored password — accounts provisioned by plugin versions that never persisted one, or existing accounts an SSO identity was linked to by name or through the self-service linking page — and seals each with the same kind of unguessable password. The pass never changes login routing, never overwrites a password that is already set, and is idempotent, so it runs on every boot and does nothing once every linked account holds a password.
-
-If the start-up pass seals anything, Jellyfin's log carries one line you can filter for:
-
-```text
-[SSO Audit] Sealed 1 SSO-linked account(s) that had no stored password: ...
-```
-
-The line reports only a count, never which accounts, because those accounts were by definition reachable by anybody on the network. The login-time seal logs a similar line, also without an account name. If a sealed account's owner was signing in by leaving the password box empty, that stops working: they should sign in through the identity provider, or an administrator can set them a real password.
 
 ## Installing
 
@@ -104,175 +82,13 @@ The nightly build may have new features unavailable in other builds, but **be wa
 
 ## Roadmap
 
-- [x] Admin page
+- [ ] Finalize RBAC access for all user properties
 - [ ] Automated tests
+- [x] Admin page
 - [x] Add role/claims support
 - [x] Use canonical usernames instead of preferred usernames
 - [x] Add user self-service
-- [ ] Finalize RBAC access for all user properties
 
-## Examples
-
-### Creating A Login Button On The Main Page
-
-In the Jellyfin administration UI, under "General", there is a "Branding" section. In that section, add the following code in the "Login disclaimer" block (replacing `PROVIDER_NAME` and the domain):
-
-```html
-<form action="https://jellyfin.example.com/sso/OID/start/PROVIDER_NAME">
-  <button class="raised block emby-button button-submit">
-    Sign in with SSO
-  </button>
-</form>
-```
-
-Then, add the following code in the "Custom CSS code" section:
-
-```css
-a.raised.emby-button {
-  padding: 0.9em 1em;
-  color: inherit !important;
-}
-
-.disclaimerContainer {
-  display: block;
-}
-```
-
-![screenshot of the configuration page with the same code](img/custom-button.png)
-
-For more information, refer to [issue #16](https://github.com/9p4/jellyfin-plugin-sso/issues/16).
-
-### SAML
-
-Example for adding a SAML configuration with the API using [curl](https://curl.se/):
-
-`curl -v -X POST -H "Content-Type: application/json" -d '{"samlEndpoint": "https://keycloak.example.com/realms/test/protocol/saml", "samlClientId": "jellyfin-saml", "samlCertificate": "Very long base64 encoded string here", "enabled": true, "enableAuthorization": true, "enableAllFolders": false, "enabledFolders": [], "adminRoles": ["jellyfin-admin"], "roles": ["allowed-to-use-jellyfin"], "enableFolderRoles": true, "folderRoleMapping": [{"role": "allowed-to-watch-movies", "folders": ["cc7df17e2f3509a4b5fc1d1ff0a6c4d0", "f137a2dd21bbc1b99aa5c0f6bf02a805"]}]}' "https://myjellyfin.example.com/sso/SAML/Add/PROVIDER_NAME?ApiKey=API_KEY_HERE"`
-
-Make sure that the JSON is the same as the configuration you would like.
-
-The SAML provider must have the following configuration (I am using Keycloak, and I cannot speak for whatever you will see):
-
-- Sign Documents on
-- Sign Assertions off
-- Client Signature Required off
-- Redirect URI: [https://myjellyfin.example.com/sso/SAML/post/PROVIDER_NAME](https://myjellyfin.example.com/sso/SAML/start/PROVIDER_NAME)
-- Base URL: [https://myjellyfin.example.com](https://myjellyfin.example.com)
-- Master SAML processing URL: [https://myjellyfin.example.com/sso/SAML/start/PROVIDER_NAME](https://myjellyfin.example.com/sso/SAML/start/PROVIDER_NAME)
-
-Make sure that `clientid` is replaced with the actual client ID and `PROVIDER_NAME` is replaced with the chosen provider name!
-
-### OpenID
-
-Example for adding an OpenID configuration with the API using [curl](https://curl.se/)
-
-`curl -v -X POST -H "Content-Type: application/json" -d '{"oidEndpoint": "https://keycloak.example.com/realms/test", "oidClientId": "jellyfin-oid", "oidSecret": "short secret here", "enabled": true, "enableAuthorization": true, "enableAllFolders": false, "enabledFolders": [], "adminRoles": ["jellyfin-admin"], "roles": ["allowed-to-use-jellyfin"], "enableFolderRoles": true, "folderRoleMapping": [{"role": "allowed-to-watch-movies", "folders": ["cc7df17e2f3509a4b5fc1d1ff0a6c4d0", "f137a2dd21bbc1b99aa5c0f6bf02a805"]}], "roleClaim": "realm_access", "oidScopes" : [""]}' "https://myjellyfin.example.com/sso/OID/Add/PROVIDER_NAME?ApiKey=API_KEY_HERE"`
-
-The OpenID provider must have the following configuration (again, I am using Keycloak)
-
-- Access Type: Confidential
-- Standard Flow Enabled
-- Redirect URI: [https://myjellyfin.example.com/sso/OID/redirect/PROVIDER_NAME](https://myjellyfin.example.com/sso/OID/redirect/PROVIDER_NAME)
-- Base URL: [https://myjellyfin.example.com](https://myjellyfin.example.com)
-
-Make sure that `clientid` is replaced with the actual client ID and `PROVIDER_NAME` is replaced with the chosen provider name!
-
-## API Endpoints
-
-The API is all done from a base URL of `/sso/`
-
-### SAML
-
-#### Flow
-
-- POST `SAML/start/PROVIDER_NAME`: This is the SAML POST endpoint. It accepts a form response from the SAML provider and returns HTML and JavaScript for the client to login with a given provider name.
-- GET `SAML/start/PROVIDER_NAME`: This is the SAML initiator: it will begin the authorization flow for SAML with a given provider name.
-- POST `SAML/Auth/PROVIDER_NAME`: This is the SAML client-side API: the HTML and JavaScript client will call this endpoint to receive Jellyfin credentials given a provider name. Post format is in JSON with the following keys:
-  - `deviceId`: string. Device ID.
-  - `deviceName`: string. Device name.
-  - `appName`: string. App name.
-  - `appVersion`: string. App version.
-  - `data`: string. The signed SAML XML request. Used to verify a request.
-
-#### Configuration
-
-These all require authorization. Append an API key to the end of the request: `curl "http://myjellyfin.example.com/sso/SAML/Get?ApiKey=API_KEY_HERE"`
-
-- POST `SAML/Add/PROVIDER_NAME`: This adds or overwrites a configuration for SAML for the given provider name. It accepts JSON with the following keys and format:
-  - `samlEndpoint`: string. The SAML endpoint.
-  - `samlClientId`: string. The SAML client ID.
-  - `samlCertificate`: string. The base64 encoded SAML certificate.
-  - `enabled`: boolean. Determines if the provider is enabled or not.
-  - `enableAuthorization`: boolean: Determines if the plugin sets permissions for the user. If false, the user will start with no permissions and an administrator will add permissions. If disabled, then the permissions of users will not be modified and the Jellyfin defaults will be used instead.
-  - `enableAllFolders`: boolean. Determines if the client logging in is allowed access to all folders.
-  - `enabledFolders`: array of strings. If `enableAllFolders` is set to false, then this will be used to determine what folders the users who log in through this provider are allowed to use.
-  - `roles`: array of strings. This validates the SAML response against the `Role` attribute. If a user has any of these roles, then the user is authenticated. Leave blank to disable role checking.
-  - `adminRoles`: array of strings. This uses SAML response's `Role` attributes. If a user has any of these roles, then the user is an admin. Leave blank to disable (default is to not enable admin permissions).
-  - `preserveAdminPermissions`: boolean. When true, the plugin can elevate users to administrator from SAML roles but will not revoke the administrator flag from an account that already has it. Defaults to `false`, which makes SAML the strict source of truth for admin status.
-  - `enableFolderRoles`: boolean. Determines if role-based folder access should be used.
-  - `folderRoleMapping`: object in the format "role": string and "folders": array of strings. The user with this role will have access to the following folders if `enableFolderRoles` is enabled. To get the IDs of the folders, GET the `/Library/MediaFolders` URL with an API key. Look for the `Id` attribute.
-  - `enableLiveTvRoles`: boolean. Determines if role-based Live TV access should be used.
-  - `liveTvRoles`: array of strings. If `enableLiveTvRoles` is enabled, then the user's roles will be checked against these. If the user is granted permission, then the user will be able to view Live TV.
-  - `liveTvManagementRoles`: array of strings. If `enableLiveTvRoles` is enabled, then the user's roles will be checked against these. If the user is granted permission, then the user will be able to manage Live TV.
-  - `enableLiveTv`: boolean. Whether to allow Live TV by default. This applies even if `enableLiveTvRoles` is enabled.
-  - `enableLiveTvManagement`: boolean. Whether to allow Live TV management by default. This applies even if `enableLiveTvRoles` is enabled.
-  - `defaultProvider`: string. The set provider then gets assigned to the user after they have logged in. If it is not set, nothing is changed. With this, a user can login with SSO but is still able to log in via other providers later. See the `Unregister` endpoint.
-  - `schemeOverride`: string. Sets the scheme for URLs used. Can be useful if the plugin refuses to use HTTPS URLs.
-- GET `SAML/Del/PROVIDER_NAME`: This removes a configuration for SAML for a given provider name.
-- GET `SAML/Get`: Lists the configurations currently available.
-
-### OpenID
-
-#### Flow
-
-- GET `OID/redirect/PROVIDER_NAME`: This is the OpenID callback path. This will return HTML and JavaScript for the client to login with a given provider name.
-- GET `OID/start/PROVIDER_NAME`: This is the OpenID initiator: it will begin the authorization flow for OpenID with a given provider name.
-- POST `OID/Auth/PROVIDER_NAME`: This is the OpenID client-side API: the HTML and JavaScript client will call this endpoint to receive Jellyfin credentials for a given provider name. Post format is in JSON with the following keys:
-  - `deviceId`: string. Device ID.
-  - `deviceName`: string. Device name.
-  - `appName`: string. App name.
-  - `appVersion`: string. App version.
-  - `data`: string. The OpenID state. Used to verify a request.
-
-#### Configuration
-
-These all require authorization. Append an API key to the end of the request: `curl "http://myjellyfin.example.com/sso/OID/Get?ApiKey=9c6e5fae4ae145669e6b7a3942f813b7"`
-
-- POST `OID/Add/PROVIDERNAME`: This adds or overwrites a configuration for OpenID with a given provider name. It accepts JSON with the following keys and format:
-  - `oidEndpoint`: string. The OpenID endpoint. Must have a `.well-known` path available.
-  - `oidClientId`: string. The OpenID client ID.
-  - `oidSecret`: string. The OpenID secret.
-  - `enabled`: boolean. Determines if the provider is enabled or not.
-  - `enableAuthorization`: boolean: Determines if the plugin sets permissions for the user. If false, the user will start with no permissions and an administrator will add permissions. If disabled, then the permissions of users will not be modified and the Jellyfin defaults will be used instead.
-  - `enableAllFolders`: boolean. Determines if the client logging in is allowed access to all folders.
-  - `enabledFolders`: array of strings. If `enableAllFolders` is set to false, then this will be used to determine what folders the users who log in through this provider are allowed to use.
-  - `roles`: array of strings. This validates the OpenID response against the claim set in `roleClaim`. If a user has any of these roles, then the user is authenticated. Leave blank to disable role checking. This currently only works for Keycloak (to my knowledge).
-  - `adminRoles`: array of strings. This uses the OpenID response against the claim set in `roleClaim`. If a user has any of these roles, then the user is an admin. Leave blank to disable (default is to not enable admin permissions).
-  - `preserveAdminPermissions`: boolean. When true, the plugin can elevate users to administrator from OIDC roles but will not revoke the administrator flag from an account that already has it. Defaults to `false`, which makes OIDC the strict source of truth for admin status.
-  - `enableFolderRoles`: boolean. Determines if role-based folder access should be used.
-  - `folderRoleMapping`: object in the format "role": string and "folders": array of strings. The user with this role will have access to the following folders if `enableFolderRoles` is enabled. To get the IDs of the folders, GET the `/Library/MediaFolders` URL with an API key. Look for the `Id` attribute.
-  - `enableLiveTvRoles`: boolean. Determines if role-based Live TV access should be used.
-  - `liveTvRoles`: array of strings. If `enableLiveTvRoles` is enabled, then the user's roles will be checked against these. If the user is granted permission, then the user will be able to view Live TV.
-  - `liveTvManagementRoles`: array of strings. If `enableLiveTvRoles` is enabled, then the user's roles will be checked against these. If the user is granted permission, then the user will be able to manage Live TV.
-  - `enableLiveTv`: boolean. Whether to allow Live TV by default. This applies even if `enableLiveTvRoles` is enabled.
-  - `enableLiveTvManagement`: boolean. Whether to allow Live TV management by default. This applies even if `enableLiveTvRoles` is enabled.
-  - `roleClaim`: string. This is the value in the OpenID response to check for roles. For Keycloak, it is `realm_access.roles` by default. The first element is the claim type, the subsequent values are to parse the JSON of the claim value. Use a "\\." to denote a literal ".". This expects a list of strings from the OIDC server.
-  - `oidScopes` : array of strings. Each contains an additional scope name to include in the OIDC request.
-    - For some OIDC providers (For example, [authelia](https://github.com/9p4/jellyfin-plugin-sso/issues/23#issuecomment-1112237616)), additional scopes may be required in order to validate group membership in role claim.
-    - Leave empty to only request the default scopes.
-  - `defaultProvider`: string. The set provider then gets assigned to the user after they have logged in. If it is not set, nothing is changed. With this, a user can login with SSO but is still able to log in via other providers later. See the `Unregister` endpoint.
-  - `defaultUsernameClaim`: string. The provider will use the claim to create the users' usernames. If not set, it fallbacks to `preferred_username`.
-  - `avatarUrlFormat`: string. The URL format for the users avatars. OIDC claims can be used by using the `@{claim_type}` syntax. If not set, the avatars won't change.
-  - `disableHttps`: boolean. Determines whether the OpenID discovery endpoint requires HTTPS.
-  - `doNotValidateEndpoints`: boolean. Determines whether the OpenID discovery process will validate endpoints. This may be required for Google.
-  - `doNotValidateIssuerName`: boolean. Determines whether the OpenID discovery process will validate the OpenID issuer name.
-  - `schemeOverride`: string. Sets the scheme for URLs used. Can be useful if the plugin refuses to use HTTPS URLs.
-- GET `OID/Del/PROVIDER_NAME`: This removes a configuration for OpenID for a given provider name.
-- GET `OID/Get`: Lists the configurations currently available.
-- GET `OID/States`: Lists currently active OpenID flows in progress.
-
-### Misc
-
-- POST `Unregister/username`: This "unregisters" a user from SSO. A JSON-formatted string must be posted with the new authentication provider. To reset to the default provider, use `Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider` like so: `curl -X POST -H "Content-Type: application/json" -d '"Jellyfin.Server.Implementations.Users.DefaultAuthenticationProvider"' "https://myjellyfin.example.com/sso/Unregister/username?ApiKey=API_KEY`
 
 ## Limitations
 
@@ -280,15 +96,8 @@ Logging in with an SSO account that has the same username as an existing Jellyfi
 
 By default, administrator status is managed strictly from SSO admin roles when `enableAuthorization` is enabled. If an existing administrator does not match an admin role during login, the plugin can revoke the administrator flag. Set `preserveAdminPermissions` to `true` to prevent SSO logins from demoting existing administrators. Other managed permissions, such as folder access and Live TV access, are still updated on every login when `enableAuthorization` is enabled and are persisted through Jellyfin's user policy path.
 
-~~There is no GUI to sign in. You have to make it yourself! The buttons should redirect to something like this: [https://myjellyfin.example.com/sso/SAML/start/clientid](https://myjellyfin.example.com/sso/SAML/start/clientid) replacing `clientid` with the provider client ID and `SAML` with the auth scheme (either `SAML` or `OID`).~~
-
-~~Furthermore, there is no functional admin page (yet). PRs for this are welcome. In the meantime, you have to interact with the API to add or remove configurations.~~ Added by [strazto](https://github.com/strazto) in PR [#18](https://github.com/9p4/jellyfin-plugin-sso/pull/18) and [#27](https://github.com/9p4/jellyfin-plugin-sso/pull/27).
 
 There is also no logout callback. Logging out of Jellyfin will log you out of Jellyfin only, instead of the SSO provider as well.
-
-~~This only supports Jellyfin on its own domain (for now). This is because I'm using string concatenation for generating some URLs. A PR is welcome to patch this.~~ Fixed in [PR #1](https://github.com/9p4/jellyfin-plugin-sso/pull/1).
-
-**This only works on the web UI**. ~~The user must open the Jellyfin web UI BEFORE using the SSO program to populate some values in the localStorage.~~ Fixed by implementing a comment by [Pfuenzle](https://github.com/Pfuenzle) in [Issue #5](https://github.com/9p4/jellyfin-plugin-sso/issues/5#issuecomment-1041864820).
 
 # Contributing
 
@@ -330,6 +139,8 @@ manifest file, `https://raw.githubusercontent.com/k0lin/jellyfin-plugin-sso/mani
 so that it refers to your fork.
 
 ## Credits and Thanks
+
+A huge thank you to [tradicije](https://github.com/tradicije) for designing the branding plugin.   
 
 Much thanks to the [Jellyfin LDAP plugin](https://github.com/jellyfin/jellyfin-plugin-ldapauth) for offering a base for me to start on my plugin.
 
