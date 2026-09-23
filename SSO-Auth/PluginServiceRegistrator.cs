@@ -1,4 +1,5 @@
 using Jellyfin.Plugin.SSO_Auth.Api;
+using Jellyfin.Plugin.SSO_Auth.Diagnostics;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,5 +21,8 @@ public sealed class PluginServiceRegistrator : IPluginServiceRegistrator
     {
         // Seals SSO-linked accounts without a stored password; the create arm only reaches new ones.
         serviceCollection.AddHostedService<PasswordlessLinkedAccountSweepService>();
+
+        // Reports a second, stale copy of this plugin, which would otherwise only surface as HTTP 500.
+        serviceCollection.AddHostedService<DuplicateInstallWarningService>();
     }
 }
