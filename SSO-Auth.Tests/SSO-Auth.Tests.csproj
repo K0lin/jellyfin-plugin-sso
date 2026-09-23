@@ -29,6 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The manifest consistency test compares the plugin class against the packaged metadata. -->
+    <Content Include="..\build.yaml">
+      <Link>build.yaml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\SSO-Auth\Config\i18n\*.json">
       <Link>i18n\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
