@@ -17,11 +17,11 @@
 
   <!-- The plugin excludes the Jellyfin runtime assets (the server provides them); a test host has no server. -->
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Common" Version="12.0.0" />
-    <PackageReference Include="Jellyfin.Controller" Version="12.0.0" />
-    <PackageReference Include="Jellyfin.Data" Version="12.0.0" />
-    <PackageReference Include="Jellyfin.Database.Implementations" Version="12.0.0" />
-    <PackageReference Include="Jellyfin.Model" Version="12.0.0" />
+    <PackageReference Include="Jellyfin.Common" Version="12.1.0" />
+    <PackageReference Include="Jellyfin.Controller" Version="12.1.0" />
+    <PackageReference Include="Jellyfin.Data" Version="12.1.0" />
+    <PackageReference Include="Jellyfin.Database.Implementations" Version="12.1.0" />
+    <PackageReference Include="Jellyfin.Model" Version="12.1.0" />
   </ItemGroup>
 
   <ItemGroup>
