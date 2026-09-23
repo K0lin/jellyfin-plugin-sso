@@ -138,7 +138,7 @@ include Setup of env, IDE and typical getting started instructions?
 
 -->
 
-The project is built with .NET 6. Download it from [here](https://dotnet.microsoft.com/en-us/download).
+The project is built with .NET 10. Download it from [here](https://dotnet.microsoft.com/en-us/download).
 
 Any code editor or IDE with .NET support will work out of the box with this program.
 

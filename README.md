@@ -80,6 +80,35 @@ The nightly build can be installed from the [main plugin repo](https://raw.githu
 
 The nightly build may have new features unavailable in other builds, but **be warned**, things may change frequently in nightly builds, and things may break, and you could lose data.
 
+## Troubleshooting
+
+### Every `/SSO/...` request returns HTTP 500 after an upgrade
+
+If the Jellyfin log shows an `AmbiguousMatchException` naming the same action twice, for example:
+
+```
+Microsoft.AspNetCore.Routing.Matching.AmbiguousMatchException: The request matched multiple endpoints. Matches:
+
+Jellyfin.Plugin.SSO_Auth.Api.SSOController.OidProviders (SSO-Auth)
+Jellyfin.Plugin.SSO_Auth.Api.SSOController.OidProviders (SSO-Auth)
+```
+
+then the server has loaded two copies of the plugin. Look in the `plugins` folder of your Jellyfin data
+directory (`/config/plugins` in the official container image) for more than one `SSO Authentication_*`
+directory, for example `SSO Authentication_5.0.0.0` next to `SSO Authentication_5.1.1`. Jellyfin adds every
+loaded plugin assembly to its API as a separate application part, so a leftover directory registers the
+plugin's controllers a second time and the router can no longer pick a match.
+
+Stop Jellyfin, delete the directory of the older version, and start Jellyfin again. The plugin logs the
+paths of all loaded copies at start-up, so the server log names the directory to remove.
+
+Plugin versions up to 5.1.1 report a plugin name (`SSO-Auth`) that differs from the name in the repository
+manifest (`SSO Authentication`). Jellyfin can write the reported name into the installed `meta.json` and only
+cleans up an older plugin directory when both directories carry the same manifest name, so the old
+directory could survive an upgrade. Later versions report the manifest name, which lets Jellyfin's own
+clean-up remove the stale directory. Upgrading from an affected version still needs the old directory
+removed once by hand.
+
 ## Roadmap
 
 - [ ] Finalize RBAC access for all user properties
