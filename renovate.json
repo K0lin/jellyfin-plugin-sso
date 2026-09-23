@@ -13,8 +13,9 @@
   "schedule": ["before 6am on monday"],
   "packageRules": [
     {
-      "description": "Group Jellyfin host packages",
-      "matchPackageNames": ["Jellyfin.Controller", "Jellyfin.Model"],
+      "description": "Group every Jellyfin package: they are released together and mixing versions makes NuGet fail the restore with NU1605",
+      "matchDatasources": ["nuget"],
+      "matchPackageNames": ["/^Jellyfin\\./"],
       "groupName": "jellyfin packages"
     },
     {
