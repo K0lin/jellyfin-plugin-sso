@@ -464,13 +464,22 @@ async function main() {
     document.getElementById('iframe-main').src = '" + punycodeBaseUrl + @"/web/index.html';
 
     var data = '" + data + @"';
-    while (localStorage.getItem(""_deviceId2"") == null ||
+    // Native clients that wrap jellyfin-web (e.g. Jellyfin Android) expose their device ID through
+    // NativeShell and never write _deviceId2, so waiting for it alone hangs forever.
+    const nativeDeviceId = () => {
+        try {
+            return document.getElementById('iframe-main').contentWindow.NativeShell?.AppHost?.deviceId?.();
+        } catch {
+            return undefined;
+        }
+    };
+    while ((localStorage.getItem(""_deviceId2"") == null && nativeDeviceId() == null) ||
         localStorage.getItem(""jellyfin_credentials"") == null ||
         JSON.parse(localStorage.getItem(""jellyfin_credentials""))['Servers'][0]['Id'] == null) {
         // If localStorage isn't initialized yet, try again.
         await sleep(100);
     }
-    var deviceId = localStorage.getItem(""_deviceId2"");
+    var deviceId = nativeDeviceId() ?? localStorage.getItem(""_deviceId2"");
     var appName = ""Jellyfin Web"";
     var appVersion = ""10.8.0"";
     var deviceName = getDeviceName();
