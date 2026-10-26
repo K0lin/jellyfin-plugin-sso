@@ -512,6 +512,31 @@
                     this has no effect.
                   </div>
                 </div>
+                <div class="inputContainer">
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="NewUserAllowedTags"
+                    data-i18n="config.fields.NewUserAllowedTagsLabel"
+                    >Allowed Tags for New Users:</label
+                  >
+                  <textarea
+                    is="emby-textarea"
+                    id="NewUserAllowedTags"
+                    type="text"
+                    class="sso-line-list emby-textarea"
+                  ></textarea>
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.NewUserAllowedTagsDescription"
+                  >
+                    Tags, one per line. A user created by this provider may only
+                    see items carrying one of these tags.
+                    <br />
+                    Set once, when the account is created; later logins and
+                    existing accounts are not changed. Leave blank to set no tag
+                    filter.
+                  </div>
+                </div>
 
                 <div class="sso-config-section-heading">
                   <p class="sso-kicker" data-i18n="config.sections.RolesKicker">

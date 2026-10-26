@@ -74,6 +74,8 @@
       "EnableAllFoldersDescription": "Ako je omogućeno, korisnicima koji se prijavljuju putem ovog provajdera dostupne su sve biblioteke.",
       "EnabledFoldersLabel": "Omogućene fascikle:",
       "EnabledFoldersDescription": "Određuje koje biblioteke su dostupne korisnicima koji se prijavljuju putem ovog provajdera. Ovo podešavanje nema efekta kada je opcija Omogući sve fascikle uključena.",
+      "NewUserAllowedTagsLabel": "Dozvoljene oznake za nove korisnike:",
+      "NewUserAllowedTagsDescription": "Oznake, jedna po redu. Korisnik kreiran putem ovog provajdera vidi samo stavke koje nose neku od ovih oznaka. Primenjuje se jednom, pri kreiranju naloga; naredne prijave i postojeći nalozi se ne menjaju. Ostavite prazno da ne biste postavili filter oznaka.",
       "RolesLabel": "Uloge:",
       "RolesDescription": "Uloge koje treba tražiti u OpenID odgovoru, jedna po redu. Korisnici sa bilo kojom navedenom ulogom biće autentifikovani. Ostavite prazno da biste onemogućili proveru uloga.",
       "AdminRolesLabel": "Administratorske uloge:",

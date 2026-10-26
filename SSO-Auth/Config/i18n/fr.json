@@ -74,6 +74,8 @@
       "EnableAllFoldersDescription": "Si activé, toutes les bibliothèques sont accessibles aux utilisateurs se connectant via ce fournisseur.",
       "EnabledFoldersLabel": "Bibliothèques autorisées :",
       "EnabledFoldersDescription": "Détermine quelles bibliothèques sont accessibles aux utilisateurs se connectant via ce fournisseur. Sans effet si « Autoriser toutes les bibliothèques » est coché.",
+      "NewUserAllowedTagsLabel": "Tags autorisés pour les nouveaux utilisateurs :",
+      "NewUserAllowedTagsDescription": "Tags, un par ligne. Un utilisateur créé par ce fournisseur ne voit que les éléments portant l'un de ces tags. Appliqué une seule fois, à la création du compte ; les connexions suivantes et les comptes existants ne sont pas modifiés. Laisser vide pour ne définir aucun filtre de tags.",
       "RolesLabel": "Rôles :",
       "RolesDescription": "Rôles à rechercher dans la réponse OpenID, un par ligne. Les utilisateurs possédant l'un des rôles listés sont authentifiés. Laissez vide pour désactiver la vérification des rôles.",
       "AdminRolesLabel": "Rôles administrateur :",

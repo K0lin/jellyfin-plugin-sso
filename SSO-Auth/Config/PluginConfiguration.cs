@@ -229,6 +229,12 @@ public class OidConfig
     public string[] EnabledFolders { get; set; }
 
     /// <summary>
+    /// Gets or sets the tags a user created by this provider may see. Applied once, when the
+    /// account is created; empty leaves a new account without a tag filter.
+    /// </summary>
+    public string[] NewUserAllowedTags { get; set; }
+
+    /// <summary>
     /// Gets or sets the roles that are checked to determine whether the user is an administrator.
     /// </summary>
     public string[] AdminRoles { get; set; }

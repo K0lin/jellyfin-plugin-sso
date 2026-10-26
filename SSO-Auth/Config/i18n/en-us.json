@@ -74,6 +74,8 @@
       "EnableAllFoldersDescription": "If enabled, all libraries are accessible to users logging in through this provider.",
       "EnabledFoldersLabel": "Enabled Folders:",
       "EnabledFoldersDescription": "Determines which libraries are accessible to users logging in through this provider. This has no effect when Enable All Folders is checked.",
+      "NewUserAllowedTagsLabel": "Allowed Tags for New Users:",
+      "NewUserAllowedTagsDescription": "Tags, one per line. A user created by this provider may only see items carrying one of these tags. Set once, when the account is created; later logins and existing accounts are not changed. Leave blank to set no tag filter.",
       "RolesLabel": "Roles:",
       "RolesDescription": "Roles to look for in the OpenID response, one per line. Users with any listed role are authenticated. Leave blank to disable role checking.",
       "AdminRolesLabel": "Admin Roles:",
