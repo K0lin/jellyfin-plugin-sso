@@ -429,7 +429,8 @@ public class SSOController : ControllerBase
                         config.PreserveAdminPermissions,
                         config.EnableContentDownloading,
                         config.ApplyContentDownloadPermissionOnEveryLogin,
-                        provisionedUser.IsNewUser)
+                        provisionedUser.IsNewUser,
+                        config.NewUserAllowedTags)
                         .ConfigureAwait(false);
                     return Ok(authenticationResult);
                 }
@@ -682,7 +683,8 @@ public class SSOController : ControllerBase
                 config.PreserveAdminPermissions,
                 config.EnableContentDownloading,
                 config.ApplyContentDownloadPermissionOnEveryLogin,
-                provisionedUser.IsNewUser)
+                provisionedUser.IsNewUser,
+                null)
                 .ConfigureAwait(false);
             return Ok(authenticationResult);
         }
@@ -1066,7 +1068,8 @@ public class SSOController : ControllerBase
     /// <param name="enableContentDownloading">The configured content download permission, or null to leave it unchanged.</param>
     /// <param name="applyContentDownloadPermissionOnEveryLogin">Whether to apply the content download permission to existing users on login.</param>
     /// <param name="isNewUser">Whether the user was created during the current SSO flow.</param>
-    private async Task<AuthenticationResult> Authenticate(Guid userId, bool isAdmin, bool enableAuthorization, bool enableAllFolders, string[] enabledFolders, bool enableLiveTv, bool enableLiveTvAdmin, AuthResponse authResponse, string defaultProvider, string avatarUrl, bool preserveAdmin, bool? enableContentDownloading, bool applyContentDownloadPermissionOnEveryLogin, bool isNewUser)
+    /// <param name="newUserAllowedTags">The tags a newly created user may see, or null to set none.</param>
+    private async Task<AuthenticationResult> Authenticate(Guid userId, bool isAdmin, bool enableAuthorization, bool enableAllFolders, string[] enabledFolders, bool enableLiveTv, bool enableLiveTvAdmin, AuthResponse authResponse, string defaultProvider, string avatarUrl, bool preserveAdmin, bool? enableContentDownloading, bool applyContentDownloadPermissionOnEveryLogin, bool isNewUser, string[] newUserAllowedTags)
     {
         User user = _userManager.GetUserById(userId);
 
@@ -1137,6 +1140,12 @@ public class SSOController : ControllerBase
 
         policy.EnableLiveTvAccess = enableLiveTv;
         policy.EnableLiveTvManagement = enableLiveTvAdmin;
+
+        // A restriction, not a permission: applied to a new account whether or not the plugin manages its permissions.
+        if (NewUserTagPolicy.Apply(policy, newUserAllowedTags, isNewUser))
+        {
+            _logger.LogInformation("New user {Username} limited to allowed tags {@AllowedTags}.", user.Username, policy.AllowedTags);
+        }
 
         if (!string.IsNullOrEmpty(defaultProvider))
         {
