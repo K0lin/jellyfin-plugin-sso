@@ -53,4 +53,15 @@ public class OidClientSecretTests
             File.Delete(path);
         }
     }
+
+    [Fact]
+    public void ResolveOidClientSecret_MissingFile_ThrowsInvalidOperationException()
+    {
+        var path = Path.Combine(Path.GetTempPath(), "sso-oid-secret-missing-" + Guid.NewGuid().ToString("N"));
+        var config = new OidConfig { OidSecretFile = path };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => SSOController.ResolveOidClientSecret(config));
+        Assert.Contains(path, ex.Message);
+        Assert.IsAssignableFrom<IOException>(ex.InnerException);
+    }
 }

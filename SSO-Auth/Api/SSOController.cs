@@ -1221,12 +1221,20 @@ public class SSOController : ControllerBase
 
     internal static string ResolveOidClientSecret(OidConfig config)
     {
-        if (!string.IsNullOrWhiteSpace(config.OidSecretFile))
+        if (string.IsNullOrWhiteSpace(config.OidSecretFile))
         {
-            return System.IO.File.ReadAllText(config.OidSecretFile.Trim()).Trim();
+            return config.OidSecret?.Trim();
         }
 
-        return config.OidSecret?.Trim();
+        var path = config.OidSecretFile.Trim();
+        try
+        {
+            return System.IO.File.ReadAllText(path).Trim();
+        }
+        catch (IOException ex)
+        {
+            throw new InvalidOperationException($"Failed to read OidSecretFile '{path}'.", ex);
+        }
     }
 
     private void Invalidate()
