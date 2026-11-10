@@ -424,17 +424,23 @@ const sleep = (milliseconds) => {
         var punycodeBaseUrl = protocol + punycodeDomain;
 
         return Base + @"
-async function link(request) {
-    const jfCredentialsString = localStorage.getItem(""jellyfin_credentials"");
+function fail(message, previousCredentials) {
+    if (previousCredentials != null) localStorage.setItem('jellyfin_credentials', previousCredentials);
+    console.error(message);
+    alert(message);
+}
 
-    if (jfCredentialsString == null) return;
+async function link(request, previousCredentials) {
+    const jfCredentialsString = previousCredentials;
+
+    if (jfCredentialsString == null) return 'Not signed in; cannot link SSO account.';
 
     const jfCredentials = JSON.parse(jfCredentialsString);
     const jfUser = jfCredentials['Servers'][0]['UserId'];
     const jfToken = jfCredentials['Servers'][0]['AccessToken'];
 
-    if (jfUser == null) return;
-    if (jfToken == null) return;
+    if (jfUser == null) return 'Not signed in; cannot link SSO account.';
+    if (jfToken == null) return 'Not signed in; cannot link SSO account.';
 
     const url = '" + $"{punycodeBaseUrl}/sso/{mode}/Link/{provider}/" + @"' + jfUser;
 
@@ -449,17 +455,19 @@ async function link(request) {
             `MediaBrowser Client=""${request.appName}"",Device=""${request.deviceName}"",DeviceId=""${request.deviceId}"",Version=""${request.appVersion}"",Token=""${jfToken}""`)
 
        xhr.onload = function(e) {
-         resolve(xhr.response);
+         if (xhr.status >= 200 && xhr.status < 300) resolve(null);
+         else resolve((xhr.responseText) || ('Link failed (' + xhr.status + ')'));
        };
        xhr.onerror = function (e) {
          console.log(e);
-         resolve(undefined);
+         resolve('Link request failed.');
        };
        xhr.send(JSON.stringify(request));
     })
 }
 
 async function main() {
+    const previousCredentials = localStorage.getItem('jellyfin_credentials');
     localStorage.removeItem('jellyfin_credentials');
     document.getElementById('iframe-main').src = '" + punycodeBaseUrl + @"/web/index.html';
 
@@ -477,7 +485,13 @@ async function main() {
 
     var request = {deviceId, appName, appVersion, deviceName, data};
 
-    if (" + $"{isLinking}".ToLower() + @") await link(request);
+    if (" + $"{isLinking}".ToLower() + @") {
+        const linkError = await link(request, previousCredentials);
+        if (linkError) {
+            fail(linkError, previousCredentials);
+            return;
+        }
+    }
 
     var url = '" + punycodeBaseUrl + "/sso/" + mode + "/Auth/" + provider + @"';
 
@@ -487,14 +501,18 @@ async function main() {
        xhr.setRequestHeader('Content-Type', 'application/json');
        xhr.setRequestHeader('Accept', 'application/json');
        xhr.onload = function(e) {
-         resolve(xhr.response);
+         resolve({ ok: xhr.status >= 200 && xhr.status < 300, body: xhr.response, status: xhr.status, text: xhr.responseText });
        };
        xhr.onerror = function () {
          resolve(undefined);
        };
        xhr.send(JSON.stringify(request));
     })
-    var responseJson = JSON.parse(response);
+    if (!response || !response.ok) {
+        fail((response && response.text) || 'Login failed.', previousCredentials);
+        return;
+    }
+    var responseJson = JSON.parse(response.body);
     var userId = 'user-' + responseJson['User']['Id'] + '-' + responseJson['User']['ServerId'];
     responseJson['User']['EnableAutoLogin'] = true;
     localStorage.setItem(userId, JSON.stringify(responseJson['User']));
