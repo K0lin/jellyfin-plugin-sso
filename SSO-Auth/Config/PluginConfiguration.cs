@@ -199,6 +199,12 @@ public class OidConfig
     public string OidSecret { get; set; }
 
     /// <summary>
+    /// Gets or sets a file holding the OpenID shared secret, read on every sign-in so that a rotated secret applies
+    /// without a restart (a Kubernetes Secret volume updates in place). Takes precedence over <see cref="OidSecret"/>.
+    /// </summary>
+    public string OidSecretFile { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the provider is enabled.
     /// </summary>
     public bool Enabled { get; set; }

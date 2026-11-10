@@ -60,6 +60,8 @@
       "ClientIdDescription": "L'identifiant client OpenID configuré chez le fournisseur pour identifier de manière unique cette instance Jellyfin.",
       "ClientSecretLabel": "Secret client OpenID :",
       "ClientSecretDescription": "Le secret client OpenID partagé avec le fournisseur.",
+      "ClientSecretFileLabel": "Fichier du secret client OpenID :",
+      "ClientSecretFileDescription": "Chemin optionnel vers un fichier contenant le secret client. Lu à chaque connexion afin qu’un secret rotaté (par ex. un volume Secret Kubernetes) s’applique sans redémarrer. S’il est défini, il a priorité sur le champ secret client.",
       "EnabledLabel": "Activé",
       "EnableContentDownloadingLabel": "Autorisation de téléchargement de contenu",
       "EnableContentDownloadingUnchanged": "Ne pas modifier",

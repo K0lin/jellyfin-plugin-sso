@@ -122,7 +122,7 @@ public class SSOController : ControllerBase
             {
                 Authority = config.OidEndpoint?.Trim(),
                 ClientId = config.OidClientId?.Trim(),
-                ClientSecret = config.OidSecret?.Trim(),
+                ClientSecret = ResolveOidClientSecret(config),
                 RedirectUri = GetRequestBase(config.SchemeOverride, config.PortOverride) + $"/sso/OID/{(Request.Path.Value.Contains("/start/", StringComparison.InvariantCultureIgnoreCase) ? "redirect" : "r")}/" + provider,
                 Scope = OidcScopeBuilder.Build(config.OidScopes, config.OverrideDefaultScopes),
                 DisablePushedAuthorization = config.DisablePushedAuthorization,
@@ -266,7 +266,7 @@ public class SSOController : ControllerBase
             {
                 Authority = config.OidEndpoint?.Trim(),
                 ClientId = config.OidClientId?.Trim(),
-                ClientSecret = config.OidSecret?.Trim(),
+                ClientSecret = ResolveOidClientSecret(config),
                 RedirectUri = redirectUri,
                 Scope = OidcScopeBuilder.Build(config.OidScopes, config.OverrideDefaultScopes),
                 DisablePushedAuthorization = config.DisablePushedAuthorization,
@@ -1217,6 +1217,24 @@ public class SSOController : ControllerBase
         _logger.LogInformation("Auth request created...");
 
         return await _sessionManager.AuthenticateDirect(authRequest).ConfigureAwait(false);
+    }
+
+    internal static string ResolveOidClientSecret(OidConfig config)
+    {
+        if (string.IsNullOrWhiteSpace(config.OidSecretFile))
+        {
+            return config.OidSecret?.Trim();
+        }
+
+        var path = config.OidSecretFile.Trim();
+        try
+        {
+            return System.IO.File.ReadAllText(path).Trim();
+        }
+        catch (IOException ex)
+        {
+            throw new InvalidOperationException($"Failed to read OidSecretFile '{path}'.", ex);
+        }
     }
 
     private void Invalidate()

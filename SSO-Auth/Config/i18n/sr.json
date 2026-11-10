@@ -60,6 +60,8 @@
       "ClientIdDescription": "OpenID Client ID podešen kod provajdera koji jedinstveno identifikuje ovu Jellyfin instancu.",
       "ClientSecretLabel": "OpenID client secret:",
       "ClientSecretDescription": "OpenID client secret koji se deli sa provajderom.",
+      "ClientSecretFileLabel": "OpenID client secret fajl:",
+      "ClientSecretFileDescription": "Opciona putanja do fajla sa client secret-om. Čita se pri svakoj prijavi, tako da rotirani secret (npr. Kubernetes Secret volume) važi bez restartovanja. Kada je podešeno, ima prednost nad poljem za client secret.",
       "EnabledLabel": "Omogućeno",
       "EnableContentDownloadingLabel": "Dozvola za preuzimanje sadržaja",
       "EnableContentDownloadingUnchanged": "Ostavi nepromenjeno",

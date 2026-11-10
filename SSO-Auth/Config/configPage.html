@@ -333,6 +333,29 @@
                     The OpenID client secret. Randomly generated & shared.
                   </div>
                 </div>
+                <div class="inputContainer">
+                  <label
+                    class="inputLabel inputLabelUnfocused"
+                    for="OidSecretFile"
+                    data-i18n="config.fields.ClientSecretFileLabel"
+                    >OpenID client secret file:</label
+                  >
+                  <input
+                    is="emby-input"
+                    id="OidSecretFile"
+                    type="text"
+                    class="sso-text"
+                  />
+                  <div
+                    class="fieldDescription"
+                    data-i18n="config.fields.ClientSecretFileDescription"
+                  >
+                    Optional path to a file containing the client secret. Read
+                    on every sign-in so a rotated Kubernetes secret applies
+                    without restarting Jellyfin. When set, this takes
+                    precedence over the client secret field.
+                  </div>
+                </div>
 
                 <div class="sso-config-section-heading">
                   <p
