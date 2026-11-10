@@ -60,6 +60,8 @@
       "ClientIdDescription": "The OpenID client ID configured on the provider to uniquely identify this Jellyfin instance.",
       "ClientSecretLabel": "OpenID client secret:",
       "ClientSecretDescription": "The OpenID client secret shared with the provider.",
+      "ClientSecretFileLabel": "OpenID client secret file:",
+      "ClientSecretFileDescription": "Optional path to a file with the client secret. Read on every sign-in so a rotated secret (for example a Kubernetes Secret volume) applies without restarting. When set, this takes precedence over the client secret field.",
       "EnabledLabel": "Enabled",
       "EnableContentDownloadingLabel": "Content Download Permission",
       "EnableContentDownloadingUnchanged": "Leave unchanged",

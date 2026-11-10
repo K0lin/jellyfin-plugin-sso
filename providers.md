@@ -4,6 +4,8 @@ This plugin has been tested to work against various providers, though not all pr
 
 ❗ Before you proceed, make sure you have another admin account if you are going to link SSO provider to the only admin account on the server, permission might get overwritten (see [#212](https://github.com/9p4/jellyfin-plugin-sso/issues/212)).
 
+> **Tip:** Instead of embedding `OidSecret` in the plugin config, you can set `OidSecretFile` to a path whose contents are the client secret. The file is read on every sign-in, so a rotated Kubernetes Secret volume applies without restarting Jellyfin. When both are set, `OidSecretFile` takes precedence.
+
 ## TOC / Tested Providers:
 
 This section is broken into providers that support Role-Based Access Control (RBAC), and those that do not
