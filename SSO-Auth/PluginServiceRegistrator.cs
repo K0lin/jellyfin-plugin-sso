@@ -1,5 +1,7 @@
+using Jellyfin.Data.Events.Users;
 using Jellyfin.Plugin.SSO_Auth.Api;
 using MediaBrowser.Controller;
+using MediaBrowser.Controller.Events;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,5 +22,8 @@ public sealed class PluginServiceRegistrator : IPluginServiceRegistrator
     {
         // Seals SSO-linked accounts without a stored password; the create arm only reaches new ones.
         serviceCollection.AddHostedService<PasswordlessLinkedAccountSweepService>();
+
+        // CanonicalLinks outlive the Jellyfin account they point at unless this consumer clears them.
+        serviceCollection.AddScoped<IEventConsumer<UserDeletedEventArgs>, UserDeletedCanonicalLinkConsumer>();
     }
 }
