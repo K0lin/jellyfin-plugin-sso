@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Jellyfin.Plugin.SSO_Auth.Tests.Api;
 
+[Collection(SsoPluginInstanceCollection.Name)]
 public class PasswordlessLinkedAccountSweepServiceTests : IDisposable
 {
     private readonly IUserManager _users = Substitute.For<IUserManager>();

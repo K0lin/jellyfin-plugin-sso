@@ -752,14 +752,37 @@ public class SSOController : ControllerBase
             userId = Guid.Empty;
         }
 
-        // No userId found? Let's try and find the user by name instead
+        var droppedStaleLink = false;
+        if (userId != Guid.Empty)
+        {
+            user = _userManager.GetUserById(userId);
+            if (user == null)
+            {
+                // Stale link to a deleted account — drop it. Do not adopt another user by name.
+                _logger.LogInformation(
+                    "SSO user {CanonicalName} was linked to deleted user {UserId}, dropping the link",
+                    canonicalName,
+                    userId);
+                var staleLinks = GetCanonicalLinks(mode, provider);
+                staleLinks.Remove(canonicalName);
+                UpdateCanonicalLinkConfig(staleLinks, mode, provider);
+                userId = Guid.Empty;
+                droppedStaleLink = true;
+            }
+        }
+
         if (userId == Guid.Empty)
         {
             user = _userManager.GetUserByName(canonicalName);
-        }
-        else
-        {
-            user = _userManager.GetUserById(userId);
+            if (user != null && droppedStaleLink)
+            {
+                _logger.LogWarning(
+                    "SSO identity {CanonicalName} pointed at a deleted user and username is taken by {UserId}; refusing automatic re-link",
+                    canonicalName,
+                    user.Id);
+                throw new InvalidOperationException(
+                    $"SSO identity '{canonicalName}' is no longer linked and the Jellyfin username is already taken. Link the accounts explicitly from the SSO linking page.");
+            }
         }
 
         if (user == null)
