@@ -1219,7 +1219,7 @@ public class SSOController : ControllerBase
         return await _sessionManager.AuthenticateDirect(authRequest).ConfigureAwait(false);
     }
 
-    private static string ResolveOidClientSecret(OidConfig config)
+    internal static string ResolveOidClientSecret(OidConfig config)
     {
         if (!string.IsNullOrWhiteSpace(config.OidSecretFile))
         {
