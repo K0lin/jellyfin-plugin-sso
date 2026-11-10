@@ -20,10 +20,7 @@ public sealed class PluginServiceRegistrator : IPluginServiceRegistrator
     /// <param name="applicationHost">The server application host.</param>
     public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
     {
-        // Seals SSO-linked accounts without a stored password; the create arm only reaches new ones.
         serviceCollection.AddHostedService<PasswordlessLinkedAccountSweepService>();
-
-        // CanonicalLinks outlive the Jellyfin account they point at unless this consumer clears them.
         serviceCollection.AddScoped<IEventConsumer<UserDeletedEventArgs>, UserDeletedCanonicalLinkConsumer>();
     }
 }

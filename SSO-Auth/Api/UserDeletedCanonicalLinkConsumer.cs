@@ -7,16 +7,12 @@ using Microsoft.Extensions.Logging;
 namespace Jellyfin.Plugin.SSO_Auth.Api;
 
 /// <summary>
-/// Drops SSO canonical links when Jellyfin deletes the account they point at.
+/// Clears canonical links when Jellyfin deletes the linked account.
 /// </summary>
 internal sealed class UserDeletedCanonicalLinkConsumer : IEventConsumer<UserDeletedEventArgs>
 {
     private readonly ILogger<UserDeletedCanonicalLinkConsumer> _logger;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="UserDeletedCanonicalLinkConsumer"/> class.
-    /// </summary>
-    /// <param name="logger">The logger.</param>
     public UserDeletedCanonicalLinkConsumer(ILogger<UserDeletedCanonicalLinkConsumer> logger)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -27,15 +23,7 @@ internal sealed class UserDeletedCanonicalLinkConsumer : IEventConsumer<UserDele
     {
         ArgumentNullException.ThrowIfNull(eventArgs);
 
-        var plugin = SSOPlugin.Instance;
-        if (plugin is null)
-        {
-            // The plugin loads before host services start, so this is normally set; skip rather than throw.
-            return Task.CompletedTask;
-        }
-
-        var user = eventArgs.Argument;
-        if (user is null)
+        if (SSOPlugin.Instance is not { } plugin || eventArgs.Argument is not { } user)
         {
             return Task.CompletedTask;
         }

@@ -758,10 +758,7 @@ public class SSOController : ControllerBase
             user = _userManager.GetUserById(userId);
             if (user == null)
             {
-                // The Jellyfin account was deleted but the CanonicalLinks entry stayed. Drop it so a
-                // later create is not blocked by a guid that resolves to nothing. Do not fall through
-                // to GetUserByName here: that would silently attach this IdP identity to whatever
-                // Jellyfin account now reuses the name (account takeover after delete + rename).
+                // Stale link to a deleted account — drop it. Do not adopt another user by name.
                 _logger.LogInformation(
                     "SSO user {CanonicalName} was linked to deleted user {UserId}, dropping the link",
                     canonicalName,
@@ -774,8 +771,6 @@ public class SSOController : ControllerBase
             }
         }
 
-        // No live linked account? Find by name, or create. After a stale-link drop, refuse when the
-        // name is already taken so re-binding requires the explicit Link API.
         if (userId == Guid.Empty)
         {
             user = _userManager.GetUserByName(canonicalName);
